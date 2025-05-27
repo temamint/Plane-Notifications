@@ -14,18 +14,24 @@ const config = {
 
 // Инициализация Express приложения
 const app = express();
-app.use(bodyParser.json());
+app.use(
+	config.webhookPath,
+	express.raw({ type: 'application/json' }) // важно: только для webhookPath
+);
 
 // Функция проверки подписи
 function verifySignature(req) {
 	const signature = req.headers['x-plane-signature'];
-	const payload = JSON.stringify(req.body);
+	const payload = req.body; // это Buffer
+
 	const expectedSignature = crypto
 		.createHmac('sha256', config.webhookSecret)
 		.update(payload)
 		.digest('hex');
+
 	return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
 }
+
 
 // Функция форматирования сообщения об issue
 function formatIssueMessage(event, action, data) {
@@ -63,7 +69,9 @@ app.post(config.webhookPath, async (req, res) => {
 	}
 
 	try {
-		const { event, action, data } = req.body;
+		const parsedBody = JSON.parse(req.body.toString());
+		const { event, action, data } = parsedBody;
+
 
 		let message;
 		if (event === 'issue') {
