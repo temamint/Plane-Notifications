@@ -9,7 +9,7 @@ const config = {
 	webhookPath: '/webhook', // Путь для вебхука
 	port: process.env.PORT || 3000, // Порт сервера
 	chatId: "-4858887399", // ID чата для отправки уведомлений
-	webhookSecret: "plane_wh_261a4df14b6049c98fd575c83be857a1" // Секретный ключ вебхука
+	webhookSecret: "plane_wh_81a18ecbf46544749f99023dec287be2" // Секретный ключ вебхука
 };
 
 // Инициализация Express приложения
