@@ -49,7 +49,6 @@ async function sendTelegramMessage(text) {
 		const response = await axios.post(url, {
 			chat_id: config.chatId,
 			text: text,
-			parse_mode: 'Markdown'
 		});
 
 		console.log('Сообщение отправлено:', response.data);
