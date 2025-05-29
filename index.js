@@ -116,6 +116,7 @@ app.post(config.webhookPath, async (req, res) => {
 		const parsedBody = JSON.parse(req.body.toString());
 		const { event, action, data } = parsedBody;
 
+		console.log(data);
 
 		let message;
 
