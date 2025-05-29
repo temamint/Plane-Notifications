@@ -1,6 +1,7 @@
 const TurndownService = require('turndown');
 const { getUserNameById } = require('./users');
 const turndownService = new TurndownService();
+const { getProjectNameById } = require('./projectServices');
 
 function formatIssueMessage(action, data) {
 	let description = 'N/A';
