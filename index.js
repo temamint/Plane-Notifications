@@ -2,27 +2,25 @@ const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+require('dotenv').config();
 
-// Конфигурация
 const config = {
-	telegramToken: "8176734640:AAEvt3IwIIzdgyFXijUT61gHw_gZWVBBLxA", // Замените на ваш токен
-	webhookPath: '/webhook', // Путь для вебхука
-	port: process.env.PORT || 3000, // Порт сервера
-	chatId: "-4858887399", // ID чата для отправки уведомлений
-	webhookSecret: "plane_wh_43fd67084e754bc4b5862b0dcda7f957" // Секретный ключ вебхука
+	telegramToken: process.env.TELEGRAM_TOKEN,
+	webhookPath: process.env.WEBHOOK_PATH,
+	port: process.env.PORT,
+	chatId: process.env.CHAT_ID,
+	webhookSecret: process.env.WEBHOOK_SECRET
 };
 
-// Инициализация Express приложения
 const app = express();
 app.use(
 	config.webhookPath,
-	express.raw({ type: 'application/json' }) // важно: только для webhookPath
+	express.raw({ type: 'application/json' })
 );
 
-// Функция проверки подписи
 function verifySignature(req) {
 	const signature = req.headers['x-plane-signature'];
-	const payload = req.body; // это Buffer
+	const payload = req.body;
 
 	const expectedSignature = crypto
 		.createHmac('sha256', config.webhookSecret)
@@ -32,14 +30,60 @@ function verifySignature(req) {
 	return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
 }
 
+function formatIssueMessage(action, data) {
+	const description =
+		typeof data.description === 'object'
+			? JSON.stringify(data.description, null, 2)
+			: data.description || 'N/A';
 
-// Функция форматирования сообщения об issue
-function formatIssueMessage(event, action, data) {
-	return `*${event.toUpperCase()}* (${action})
-*ID:* ${data.id}
-*Название:* ${data.name || 'N/A'}
-*Описание:* ${data.description || 'N/A'}`;
+	let title;
+	switch (action) {
+		case 'created':
+			title = '🆕 Новая задача';
+			break;
+		case 'updated':
+			title = '✏️ Обновление задачи';
+			break;
+		case 'deleted':
+			title = '🗑️ Удалена задача';
+			break;
+		default:
+			title = `*ISSUE* — (${action})`;
+	}
+
+	return `${title}
+*ID:* ${data.identifier}
+*Название:* ${data.name || 'Без названия'}
+
+*Описание:* ${description}`;
 }
+
+function formatCommentMessage(action, data) {
+	const content =
+		typeof data.content === 'object'
+			? JSON.stringify(data.content, null, 2)
+			: data.content || 'Комментарий без текста';
+
+	let title;
+	switch (action) {
+		case 'created':
+			title = '💬 Новый комментарий';
+			break;
+		case 'updated':
+			title = '✏️ Обновлён комментарий';
+			break;
+		case 'deleted':
+			title = '🗑️ Удалён комментарий';
+			break;
+		default:
+			title = `*COMMENT* (${action})`;
+	}
+
+	return `${title}
+*Автор:* ${data.created_by?.name || 'N/A'}
+*Содержание:* ${content}`;
+}
+
 
 // Функция отправки сообщения в Telegram
 async function sendTelegramMessage(text) {
@@ -49,6 +93,7 @@ async function sendTelegramMessage(text) {
 		const response = await axios.post(url, {
 			chat_id: config.chatId,
 			text: text,
+			parse_mode: 'Markdown'
 		});
 
 		console.log('Сообщение отправлено:', response.data);
@@ -73,10 +118,16 @@ app.post(config.webhookPath, async (req, res) => {
 
 
 		let message;
-		if (event === 'issue') {
-			message = formatIssueMessage(event, action, data);
-		} else {
-			message = `Необработанное событие: ${event}`;
+
+		switch (event) {
+			case 'issue':
+				message = formatIssueMessage(action, data);
+				break;
+			case 'issue_comment':
+				message = formatCommentMessage(action, data);
+				break;
+			default:
+				message = `🚫 Необработанное событие: *${event}*`;
 		}
 
 		await sendTelegramMessage(message);
@@ -88,3 +139,4 @@ app.post(config.webhookPath, async (req, res) => {
 });
 
 module.exports = app;
+
