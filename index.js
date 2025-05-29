@@ -3,6 +3,20 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 require('dotenv').config();
+const TurndownService = require('turndown');
+const turndownService = new TurndownService();
+
+
+const userMap = {
+	'119ff6a7-34cd-4c9e-bd3c-6713180db64c': 'Artem Mint',
+	'adbe2bdc-1c23-4aed-8dd7-de7c0ebf9a9d': 'Dimasio Ovchinnickov',
+	'eb65a721-30fb-4bdd-bcb4-7a392ba628ea': 'Kateryna Diachenko',
+	'b3ecba52-6882-436c-969c-6c9ae1dd6dc0': 'Руслан Мельник',
+	'f6b9dbc6-cd48-48de-96c8-dc7288f5356a': 'Роман Барабанов',
+	'4f01ecb8-02da-40db-9b28-369e019b8c78': 'Dmitriy Shein',
+	'ad8d0cda-9e6b-40c1-9067-ce421ab0e209': 'Alexei Kirienko',
+};
+
 
 const config = {
 	telegramToken: process.env.TELEGRAM_BOT_TOKEN,
@@ -30,12 +44,19 @@ function verifySignature(req) {
 	return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
 }
 
-function formatIssueMessage(action, data) {
-	const description =
-		typeof data.description === 'object'
-			? JSON.stringify(data.description, null, 2)
-			: data.description || 'N/A';
+function getUserNameById(id) {
+	return userMap[id] || `Unknown (${id})`;
+}
 
+
+function formatIssueMessage(action, data) {
+	let description = 'N/A';
+
+	if (typeof data.description_html === 'string' && data.description_html.trim()) {
+		description = turndownService.turndown(data.description_html);
+	} else if (typeof data.description_stripped === 'string') {
+		description = data.description_stripped;
+	}
 	let title;
 	switch (action) {
 		case 'created':
@@ -48,11 +69,11 @@ function formatIssueMessage(action, data) {
 			title = '🗑️ Удалена задача';
 			break;
 		default:
-			title = `*ISSUE* — (${action})`;
+			title = `*ISSUE* — ${action}`;
 	}
 
 	return `${title}
-*ID:* ${data.identifier}
+*ID:* ${getUserNameById(data.updated_by)}
 *Название:* ${data.name || 'Без названия'}
 
 *Описание:* ${description}`;
@@ -80,7 +101,7 @@ function formatCommentMessage(action, data) {
 	}
 
 	return `${title}
-*Автор:* ${data.created_by?.name || 'N/A'}
+*Автор:* ${getUserNameById(data.updated_by)}
 *Содержание:* ${content}`;
 }
 
