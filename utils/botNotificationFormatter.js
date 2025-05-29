@@ -19,7 +19,7 @@ function formatIssueMessage(action, data) {
 	}
 
 	return `${title}
-*ID:* ${data.identifier}
+*Проект:* ${getProjectNameById(data.project_id)}
 *Название:* ${data.name || 'Без названия'}
 *Описание:* ${description}
 *Автор:* ${getUserNameById(data.updated_by)}`;
