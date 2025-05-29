@@ -9,4 +9,6 @@ const app = express();
 app.use('/webhook', webhookRoute);
 app.use('/projects', projectRoutes);
 
-module.exports = app;
+// Вместо app.listen — экспорт обработчика
+const serverless = require('serverless-http');
+module.exports = serverless(app);
