@@ -12,6 +12,14 @@ const config = {
 	webhookSecret: process.env.WEBHOOK_SECRET
 };
 
+console.log('Loaded ENV:', {
+	TELEGRAM_TOKEN: config.telegramToken,
+	CHAT_ID: config.chatId,
+	WEBHOOK_SECRET: config.webhookSecret,
+	PORT: config.port,
+	WEBHOOK_PATH: config.webhookPath
+});
+
 const app = express();
 app.use(
 	config.webhookPath,
