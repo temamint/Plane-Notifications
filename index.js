@@ -5,20 +5,12 @@ const crypto = require('crypto');
 require('dotenv').config();
 
 const config = {
-	telegramToken: process.env.TELEGRAM_TOKEN,
+	telegramToken: process.env.TELEGRAM_BOT_TOKEN,
 	webhookPath: process.env.WEBHOOK_PATH,
 	port: process.env.PORT,
 	chatId: process.env.CHAT_ID,
-	webhookSecret: process.env.WEBHOOK_SECRET
+	webhookSecret: process.env.PLANE_WEBHOOK_SECRET
 };
-
-console.log('Loaded ENV:', {
-	TELEGRAM_TOKEN: config.telegramToken,
-	CHAT_ID: config.chatId,
-	WEBHOOK_SECRET: config.webhookSecret,
-	PORT: config.port,
-	WEBHOOK_PATH: config.webhookPath
-});
 
 const app = express();
 app.use(
