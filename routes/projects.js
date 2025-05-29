@@ -1,21 +1,9 @@
-// routes/projects.js
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
+const { planeApi } = require('../utils/planeApi');
 require('dotenv').config();
 
-// Настраиваем клиент Plane API
-const planeApi = axios.create({
-	baseURL: process.env.PLANE_API_BASE_URL || 'https://api.plane.so/api/v1',
-	headers: {
-		'X-API-Key': process.env.PLANE_API_KEY,
-		'Content-Type': 'application/json',
-		'Accept': 'application/json'
-	}
-});
-
-// Роут: /projects
-router.get('/projects', async (req, res) => {
+router.get('/', async (req, res) => {
 	try {
 		const response = await planeApi.get(
 			`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/`
