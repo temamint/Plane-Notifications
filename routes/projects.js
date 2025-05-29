@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
 		const response = await planeApi.get(
 			`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/`
 		);
-		const projects = response.data;
+		const projects = response.data.results || [];
 
 		const html = `
 			<!DOCTYPE html>
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 			<body>
 				<h1>📦 Projects in Plane Workspace</h1>
 				<ul>
-					${projects.map(p => `<li><strong>${p.name}</strong> (ID: ${p.id})</li>`).join('')}
+				${projects.map(p => `<li><strong>${p.name}</strong> (ID: ${p.id})</li>`).join('')}
 				</ul>
 			</body>
 			</html>
