@@ -23,8 +23,23 @@ const config = {
 	webhookPath: process.env.WEBHOOK_PATH,
 	port: process.env.PORT,
 	chatId: process.env.CHAT_ID,
-	webhookSecret: process.env.PLANE_WEBHOOK_SECRET
+	webhookSecret: process.env.PLANE_WEBHOOK_SECRET,
 };
+
+const planeApi = axios.create({
+	baseURL: process.env.PLANE_API_BASE_URL || 'https://api.plane.so/api/v1',
+	headers: {
+		'X-API-Key': process.env.PLANE_API_KEY,
+		'Content-Type': 'application/json',
+		'Accept': 'application/json'
+	}
+});
+
+const response = await planeApi.get(
+	`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/`
+);
+
+console.log(response.data);
 
 const app = express();
 app.use(
@@ -81,9 +96,9 @@ function formatIssueMessage(action, data) {
 
 function formatCommentMessage(action, data) {
 	const content =
-		typeof data.content === 'object'
-			? JSON.stringify(data.content, null, 2)
-			: data.content || 'Комментарий без текста';
+		typeof data.comment_stripped === 'object'
+			? JSON.stringify(data.comment_stripped, null, 2)
+			: data.comment_stripped || 'Комментарий без текста';
 
 	let title;
 	switch (action) {
@@ -101,7 +116,7 @@ function formatCommentMessage(action, data) {
 	}
 
 	return `${title}
-*Автор:* ${getUserNameById(data.updated_by)}
+*Автор:* ${getUserNameById(data.created_by)}
 *Содержание:* ${content}`;
 }
 
