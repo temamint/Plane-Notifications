@@ -27,6 +27,8 @@ async function ensureProjectsLoaded() {
 }
 
 function getProjectNameById(id) {
+	console.log('ID from webhook:', id);
+	console.log('projectMap:', global.projectMap);
 	return global.projectMap.get(id) || `Unknown (${id})`;
 }
 
