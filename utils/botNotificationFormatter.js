@@ -1,9 +1,8 @@
 const TurndownService = require('turndown');
-const { getUserNameById } = require('./users');
 const turndownService = new TurndownService();
 const { getProjectNameById } = require('./projectServices');
 
-function formatIssueMessage(action, data) {
+async function formatIssueMessage(action, data) {
 	let description = 'N/A';
 	if (typeof data.description_html === 'string' && data.description_html.trim()) {
 		description = turndownService.turndown(data.description_html);
@@ -25,10 +24,10 @@ function formatIssueMessage(action, data) {
 *Проект:* ${getProjectNameById(data.project)}
 *Название:* ${data.name || 'Без названия'}
 *Описание:* ${description}
-*Автор:* ${getUserNameById(data.updated_by)}`;
+*Автор:* ${await getUserName(data.project, data.updated_by)}`;
 }
 
-function formatCommentMessage(action, data) {
+async function formatCommentMessage(action, data) {
 	const content = typeof data.comment_stripped === 'object'
 		? JSON.stringify(data.comment_stripped, null, 2)
 		: data.comment_stripped || 'Комментарий без текста';
@@ -42,7 +41,7 @@ function formatCommentMessage(action, data) {
 	}
 
 	return `${title}
-*Автор:* ${getUserNameById(data.created_by)}
+*Автор:* ${await getUserName(data.project, data.created_by)}
 *Содержание:* ${content}`;
 }
 
