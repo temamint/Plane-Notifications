@@ -19,6 +19,8 @@ function formatIssueMessage(action, data) {
 		default: title = `*ISSUE* — ${action}`;
 	}
 
+	console.log('data:', data);
+
 	return `${title}
 *Проект:* ${getProjectNameById(data.project_id)}
 *Название:* ${data.name || 'Без названия'}
