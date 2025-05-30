@@ -7,8 +7,7 @@ const planeApi = axios.create({
 		'X-API-Key': process.env.PLANE_API_KEY,
 		'Content-Type': 'application/json',
 		'Accept': 'application/json'
-	},
-	timeout: 5000
+	}
 });
 
 module.exports = { planeApi };
