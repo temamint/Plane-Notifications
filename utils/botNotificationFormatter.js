@@ -22,7 +22,7 @@ function formatIssueMessage(action, data) {
 	console.log('data:', data);
 
 	return `${title}
-*Проект:* ${getProjectNameById(data.project_id)}
+*Проект:* ${getProjectNameById(data.project)}
 *Название:* ${data.name || 'Без названия'}
 *Описание:* ${description}
 *Автор:* ${getUserNameById(data.updated_by)}`;
