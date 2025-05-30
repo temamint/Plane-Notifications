@@ -14,6 +14,7 @@ async function loadProjects() {
 		});
 
 		console.log(`📦 Загружено проектов: ${projects.length}`);
+		console.log(projects);
 	} catch (error) {
 		console.error('❌ Не удалось загрузить проекты:', error.message);
 		projectMap.clear(); // если ошибка — обнуляем, чтобы не остались старые
