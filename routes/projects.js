@@ -10,6 +10,7 @@ router.get('/', async (req, res) => {
 			`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/`
 		);
 		const projects = projectResponse.data.results || [];
+		console.log(projectResponse.data);
 
 		// Для каждого проекта подгружаем участников
 		const projectsWithMembers = await Promise.all(
