@@ -10,9 +10,5 @@ const app = express();
 app.use('/webhook', webhookRoute);
 app.use('/projects', projectRoutes);
 
-loadProjects()
-	.then(() => console.log('📦 Projects loaded'))
-	.catch(err => console.error('❌ Failed to load projects:', err));
-
 module.exports = app;
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const { verifySignature } = require('../utils/verifySignature');
 const { formatIssueMessage, formatCommentMessage } = require('../utils/botNotificationFormatter');
 const { sendTelegramMessage } = require('../utils/telegram');
+const { ensureProjectsLoaded } = require('../utils/projectService');
 
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
 	console.log('📩 Получен вебхук:', req.headers, req.body);
@@ -12,6 +13,8 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 	}
 
 	try {
+		await ensureProjectsLoaded();
+
 		const parsedBody = JSON.parse(req.body.toString());
 		const { event, action, data } = parsedBody;
 
