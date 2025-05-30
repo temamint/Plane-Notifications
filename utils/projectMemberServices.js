@@ -1,5 +1,6 @@
 // utils/projectMembersService.js
 const { planeApi } = require('./planeApi');
+require('dotenv').config();
 
 const memberMap = new Map();
 
@@ -9,7 +10,7 @@ async function fetchProjectMembers(projectId) {
 	console.log(`📦 Загружаем участников проекта ${projectId}`);
 
 	try {
-		const res = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/members`);
+		const res = await planeApi.get(`/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/members/`);
 		const members = res.data?.results || [];
 
 		console.log(members);
