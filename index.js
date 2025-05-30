@@ -12,9 +12,6 @@ app.use('/projects', projectRoutes);
 
 (async () => {
 	await loadProjects(); // 👈 важно вызывать до старта сервера
-	app.listen(port, () => {
-		console.log(`🚀 Server running on port ${port}`);
-	});
+	module.exports = app;
 })();
 
-module.exports = app;
