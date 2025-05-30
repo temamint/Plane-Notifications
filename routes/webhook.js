@@ -4,7 +4,6 @@ const { verifySignature } = require('../utils/verifySignature');
 const { formatIssueMessage, formatCommentMessage } = require('../utils/botNotificationFormatter');
 const { sendTelegramMessage } = require('../utils/telegram');
 const { ensureProjectsLoaded } = require('../utils/projectServices');
-const { getUserName } = require('../utils/projectMembersService');
 
 
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
