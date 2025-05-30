@@ -6,9 +6,13 @@ const memberMap = new Map();
 async function fetchProjectMembers(projectId) {
 	if (memberMap.has(projectId)) return memberMap.get(projectId);
 
+	console.log(`📦 Загружаем участников проекта ${projectId}`);
+
 	try {
-		const res = await planeApi.get(`/projects/${projectId}/members`);
+		const res = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/members`);
 		const members = res.data?.results || [];
+
+		console.log(members);
 
 		// Кэшируем мапу user_id → full_name
 		const userMap = new Map();
