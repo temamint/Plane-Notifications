@@ -5,18 +5,12 @@ let projectMap = new Map();
 
 async function loadProjects() {
 	try {
-		const res = await planeApi.get(
-			`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/`
-		);
-		const projects = res.data.results || [];
-
-		projectMap = new Map(
-			projects.map(project => [project.id, project.name])
-		);
-
-		console.log(`📦 Загружено проектов: ${projectMap.size}`);
-	} catch (err) {
-		console.error('❌ Не удалось загрузить проекты:', err.message);
+		const response = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/`);
+		projectCache.projects = response.data?.results || [];
+		console.log(`📦 Загружено проектов: ${projectCache.projects.length}`);
+	} catch (error) {
+		console.error('❌ Не удалось загрузить проекты:', error.message);
+		projectCache.projects = []; // чтобы не остались старые
 	}
 }
 
