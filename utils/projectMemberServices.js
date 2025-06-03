@@ -15,12 +15,11 @@ async function fetchProjectMembers(projectId) {
 
 		console.log(members);
 
-		// Кэшируем мапу user_id → full_name
 		const userMap = new Map();
-		members.forEach(m => {
-			if (m.member && m.member.id) {
-				const fullName = `${m.member.first_name} ${m.member.last_name}`.trim();
-				userMap.set(m.member.id, fullName || `Unknown (${m.member.id})`);
+		members.forEach(member => {
+			if (member && member.id) {
+				const fullName = `${member.first_name} ${member.last_name} (${member.display_name})`.trim();
+				userMap.set(member.id, fullName || `Unknown (${member.id})`);
 			}
 		});
 
