@@ -16,11 +16,11 @@ router.get('/', async (req, res) => {
 		const projectsWithMembers = await Promise.all(
 			projects.map(async (project) => {
 				try {
-					const memberRes = await planeApi.get(`/workspaces/:${process.env.PLANE_WORKSPACE_SLUG}/projects/${project.identifier}/members/`);
+					const memberRes = await planeApi.get(`/workspaces/:${process.env.PLANE_WORKSPACE_SLUG}/projects/${project.id}/members/`);
 					const members = memberRes.data.results || [];
 					return { ...project, members };
 				} catch (err) {
-					console.error(`❌ Не удалось получить участников проекта ${project.identifier}:`, err.response?.data || err.message);
+					console.error(`❌ Не удалось получить участников проекта ${project.id}:`, err.response?.data || err.message);
 					return { ...project, members: [] };
 				}
 			})
