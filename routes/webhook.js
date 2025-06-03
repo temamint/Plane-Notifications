@@ -22,10 +22,10 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 		let message;
 		switch (event) {
 			case 'issue':
-				message = formatIssueMessage(action, data);
+				message = await formatIssueMessage(action, data);
 				break;
 			case 'issue_comment':
-				message = formatCommentMessage(action, data);
+				message = await formatCommentMessage(action, data);
 				break;
 			default:
 				message = `🚫 Необработанное событие: *${event}*`;
