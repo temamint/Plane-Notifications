@@ -37,7 +37,7 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 
 		if (event === 'issue' && data?.id) {
 			console.log(`Задача такая типо: `, JSON.stringify(data, null, 2),)
-			const subscribers = await getIssueSubscribers(data.id);
+			const subscribers = await getIssueSubscribers(data.project, data.id);
 			console.log(`Подписчики задачи: ${subscribers}`);
 
 			if (!subscribers.length) {
