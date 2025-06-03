@@ -20,6 +20,14 @@
 			"methods": [
 				"GET"
 			]
+		},
+		{
+			"src": "/admin",
+			"dest": "index.js",
+			"methods": [
+				"GET",
+				"POST"
+			]
 		}
 	]
 }
