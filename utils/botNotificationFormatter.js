@@ -35,12 +35,7 @@ async function formatIssueMessage(action, data) {
 		description = description.slice(0, MAX_DESCRIPTION_LENGTH) + '...';
 	}
 
-
-	console.log(`Описание события: ${description}`);
-
 	const title = getIssueTitle(action);
-
-	console.log(`Заголовок события: ${title}`);
 
 	const message = `${title}
 *Проект:* ${await getProjectNameById(data.project)}

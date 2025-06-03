@@ -26,10 +26,8 @@ async function fetchPlaneUsers() {
 
 
 router.get('/', async (req, res) => {
-	console.log(`Начало работы с админкой`);
 	const map = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 	const planeUsers = await fetchPlaneUsers();
-	console.log(`Получили пользователей Plane`);
 
 	const html = ejs.render(fs.readFileSync(htmlPath, 'utf-8'), {
 		users: map.telegram_users || {},
