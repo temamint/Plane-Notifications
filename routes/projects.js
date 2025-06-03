@@ -16,9 +16,10 @@ router.get('/', async (req, res) => {
 		const projectsWithMembers = await Promise.all(
 			projects.map(async (project) => {
 				try {
-					const memberRes = await planeApi.get(`/projects/${project.id}/members/`);
-					const members = memberRes.data.results || [];
-					return { ...project, members };
+					const memberRes = await planeApi.get(`workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${project.id}/issues/`);
+					// const members = memberRes.data.results || [];
+					console.log(memberRes.data);
+					return { membersRes };
 				} catch (err) {
 					console.error(`❌ Не удалось получить участников проекта ${project.id}:`, err.response);
 					return { ...project, members: [] };
