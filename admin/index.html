@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Связка Telegram ↔ Plane</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f8f8f8;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    select {
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Сопоставление Telegram ↔ Plane</h1>
+  <form method="POST" action="/admin/link">
+    <table>
+      <tr>
+        <th>Telegram ID</th>
+        <th>Имя</th>
+        <th>Username</th>
+        <th>Пользователь Plane</th>
+      </tr>
+
+      <% Object.entries(users).forEach(([tgId, info])=> { %>
+        <tr>
+          <td>
+            <%= tgId %>
+          </td>
+          <td>
+            <%= info.first_name %>
+              <%= info.last_name %>
+          </td>
+          <td>@<%= info.username %>
+          </td>
+          <td>
+            <select name="planeMap[<%= tgId %>]">
+              <option value="">-- Не выбрано --</option>
+              <% planeUsers.forEach((user)=> { %>
+                <option value="<%= user.id %>" <%=currentLinks[tgId]===user.id ? 'selected' : '' %>>
+                  <%= user.first_name %>
+                    <%= user.last_name %> (@<%= user.id %>)
+                </option>
+                <% }) %>
+            </select>
+          </td>
+        </tr>
+        <% }) %>
+    </table>
+    <button type="submit">💾 Сохранить</button>
+  </form>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+{
+  "telegram_to_plane": {
+    "481486131": "119ff6a7-34cd-4c9e-bd3c-6713180db64c"
+  },
+  "plane_to_telegram": {
+    "119ff6a7-34cd-4c9e-bd3c-6713180db64c": 481486131
+  },
+  "telegram_users": {
+    "481486131": {
+      "username": "temamint",
+      "first_name": "Артём",
+      "last_name": "Бойченко"
+    }
+  }
+}
