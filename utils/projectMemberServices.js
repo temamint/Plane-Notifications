@@ -10,7 +10,7 @@ function isCacheFresh(entry) {
 }
 
 async function fetchProjectMembers(projectId) {
-	const cached = memberMap.get(projectId);
+	const cached = memberCache.get(projectId);
 	if (isCacheFresh(cached)) return cached.userMap;
 
 	if (memberCache.has(projectId)) return memberCache.get(projectId);
