@@ -11,6 +11,8 @@ async function formatIssueMessage(action, data) {
 		description = data.description_stripped;
 	}
 
+	console.log(`Описание события: ${description}`);
+
 	let title;
 	switch (action) {
 		case 'created': title = '🆕 Новая задача'; break;
@@ -19,13 +21,17 @@ async function formatIssueMessage(action, data) {
 		default: title = `*ISSUE* — ${action}`;
 	}
 
-	console.log('data:', data);
+	console.log(`Заголовок события: ${title}`);
 
-	return `${title}
+	const message = `${title}
 *Проект:* ${await getProjectNameById(data.project)}
 *Название:* ${data.name || 'Без названия'}
 *Описание:* ${description}
 *Автор:* ${await getUserName(data.project, data.updated_by)}`;
+
+	console.log(`Сформированное сообщение: ${message}`);
+
+	return message;
 }
 
 async function formatCommentMessage(action, data) {
