@@ -10,14 +10,19 @@ function isCacheFresh(entry) {
 }
 
 async function fetchProjectMembers(projectId) {
+	console.log('📦 Загрузка участников проекта из кэша...');
 	const cached = memberCache.get(projectId);
+	console.log(`📦 Загружены участники из кэша: ${cached?.userMap}`);
 	if (isCacheFresh(cached)) {
+		console.log('📦 Кэш актуален');
 		return cached.userMap;
 	}
 
 	try {
 		const response = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/members/`);
 		const members = response.data?.results || [];
+
+		console.log(`📦 Загружены участники: ${members}`);
 
 		const userMap = new Map();
 		members.forEach(member => {

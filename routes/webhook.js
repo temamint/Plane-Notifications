@@ -39,8 +39,8 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 				if (assignee?.id) userIds.add(assignee.id);
 			});
 
-			if (data.created_by?.id) {
-				userIds.add(data.created_by.id);
+			if (data.created_by) {
+				userIds.add(data.created_by);
 			}
 
 			console.log('🧑‍💻 Получатели уведомления (по assignees и author):', [...userIds]);
