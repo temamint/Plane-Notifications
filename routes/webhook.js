@@ -9,9 +9,6 @@ const { ensureProjectsLoaded } = require('../utils/projectServices');
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
 	console.log('📩 Получен вебхук:', req.headers, req.body);
 
-	console.log('📩 Заголовок Content-Type:', req.headers['content-type']);
-
-
 	if (!verifySignature(req)) {
 		return res.status(403).send('Неверная подпись');
 	}

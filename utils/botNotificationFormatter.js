@@ -22,7 +22,7 @@ async function formatIssueMessage(action, data) {
 	console.log('data:', data);
 
 	return `${title}
-*Проект:* ${getProjectNameById(data.project)}
+*Проект:* ${await getProjectNameById(data.project)}
 *Название:* ${data.name || 'Без названия'}
 *Описание:* ${description}
 *Автор:* ${await getUserName(data.project, data.updated_by)}`;
@@ -42,7 +42,8 @@ async function formatCommentMessage(action, data) {
 	}
 
 	return `${title}
-*Автор:* ${await getUserName(data.project, data.created_by)}
+*Проект:* ${await getProjectNameById(data.project)}
+*Автор комментария:* ${await getUserName(data.project, data.created_by)}
 *Содержание:* ${content}`;
 }
 
