@@ -5,7 +5,6 @@ const { formatIssueMessage, formatCommentMessage } = require('../utils/botNotifi
 const { sendTelegramMessage } = require('../utils/telegram');
 const { ensureProjectsLoaded } = require('../utils/projectServices');
 const { getTelegramIdByPlaneUserId } = require('../utils/userService');
-const { getIssueSubscribers } = require('../utils/issueService');
 
 
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -34,24 +33,28 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 		}
 
 		if (event === 'issue' && data?.id) {
-			const subscribers = await getIssueSubscribers(data.project, data.id);
-			console.log(`Подписчики задачи: ${subscribers}`);
+			const userIds = new Set();
 
-			if (!subscribers.length) {
-				console.log('⚠️ Нет подписчиков у задачи — уведомление не отправлено');
-				return res.status(200).send('Нет подписчиков');
+			(data.assignees || []).forEach(assignee => {
+				if (assignee?.id) userIds.add(assignee.id);
+			});
+
+			if (data.created_by?.id) {
+				userIds.add(data.created_by.id);
 			}
 
+			console.log('🧑‍💻 Получатели уведомления (по assignees и author):', [...userIds]);
+
 			let sentCount = 0;
-			for (const planeUserId of subscribers) {
+			for (const planeUserId of userIds) {
 				const tgId = getTelegramIdByPlaneUserId(planeUserId);
 				if (tgId) {
 					await sendTelegramMessage(message, tgId);
 					sentCount++;
 				}
 			}
+			console.log(`✅ Уведомление отправлено ${sentCount} пользователям`);
 
-			console.log(`✅ Отправлено ${sentCount} подписчикам`);
 			return res.status(200).send(`Отправлено ${sentCount}`);
 		} else {
 			await sendTelegramMessage(message);
