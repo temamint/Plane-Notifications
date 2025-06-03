@@ -11,9 +11,9 @@ function isCacheFresh(entry) {
 
 async function fetchProjectMembers(projectId) {
 	const cached = memberCache.get(projectId);
-	if (isCacheFresh(cached)) return cached.userMap;
-
-	if (memberCache.has(projectId)) return memberCache.get(projectId);
+	if (isCacheFresh(cached)) {
+		return cached.userMap;
+	}
 
 	try {
 		const response = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/members/`);
