@@ -9,5 +9,9 @@ const app = express();
 app.use('/webhook', webhookRoute);
 app.use('/projects', projectRoutes);
 
-module.exports = app;
+app.listen(3000, () => {
+	console.log('Сервер запущен на порту 3000');
+});
+
+// module.exports = app;
 
