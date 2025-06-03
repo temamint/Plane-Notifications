@@ -2,18 +2,22 @@
 const { planeApi } = require('./planeApi');
 require('dotenv').config();
 
-const memberMap = new Map();
+const memberCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000;
+
+function isCacheFresh(entry) {
+	return entry && (Date.now() - entry.timestamp < CACHE_TTL);
+}
 
 async function fetchProjectMembers(projectId) {
-	if (memberMap.has(projectId)) return memberMap.get(projectId);
+	const cached = memberMap.get(projectId);
+	if (isCacheFresh(cached)) return cached.userMap;
 
-	console.log(`📦 Загружаем участников проекта ${projectId}`);
+	if (memberCache.has(projectId)) return memberCache.get(projectId);
 
 	try {
 		const response = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/members/`);
-		const members = response.data || [];
-
-		console.log(members);
+		const members = response.data?.results || [];
 
 		const userMap = new Map();
 		members.forEach(member => {
@@ -23,9 +27,8 @@ async function fetchProjectMembers(projectId) {
 			}
 		});
 
-		memberMap.set(projectId, userMap);
+		memberCache.set(projectId, userMap);
 
-		console.log(`Карта участников: ${userMap}`);
 		return userMap;
 	} catch (err) {
 		console.error(`❌ Не удалось загрузить участников проекта ${projectId}:`, err.message);
@@ -35,7 +38,6 @@ async function fetchProjectMembers(projectId) {
 
 async function getUserName(projectId, userId) {
 	const membersMap = await fetchProjectMembers(projectId);
-	console.log(`projectId: ${projectId}, userId: ${userId}`);
 	return membersMap.get(userId) || `Unknown (${userId})`;
 }
 
