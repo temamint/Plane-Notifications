@@ -24,6 +24,8 @@ async function fetchProjectMembers(projectId) {
 		});
 
 		memberMap.set(projectId, userMap);
+
+		console.log(`Карта участников: ${userMap}`);
 		return userMap;
 	} catch (err) {
 		console.error(`❌ Не удалось загрузить участников проекта ${projectId}:`, err.message);
@@ -33,6 +35,7 @@ async function fetchProjectMembers(projectId) {
 
 async function getUserName(projectId, userId) {
 	const membersMap = await fetchProjectMembers(projectId);
+	console.log(`projectId: ${projectId}, userId: ${userId}`);
 	return membersMap.get(userId) || `Unknown (${userId})`;
 }
 
