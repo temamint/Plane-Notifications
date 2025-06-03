@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 					const members = memberRes.data.results || [];
 					return { ...project, members };
 				} catch (err) {
-					console.error(`❌ Не удалось получить участников проекта ${project.identifier}:`, err.response?.data || err.message);
+					console.error(`❌ Не удалось получить участников проекта ${project.identifier}:`, err.response);
 					return { ...project, members: [] };
 				}
 			})
