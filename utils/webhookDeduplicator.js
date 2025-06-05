@@ -1,7 +1,12 @@
 const crypto = require('crypto');
 
-const processedEvents = new Set();
-const TTL = 5 * 60 * 1000; // 5 минут
+// ✅ Глобальный shared Set (для Vercel и dev-сред)
+if (!global.__processedEvents) {
+	global.__processedEvents = new Set();
+}
+const processedEvents = global.__processedEvents;
+
+const TTL = 5 * 60 * 1000;
 
 function getEventFingerprint({ event, action, data }) {
 	if (!data?.id) {
@@ -9,26 +14,21 @@ function getEventFingerprint({ event, action, data }) {
 		return null;
 	}
 
-	const meaningfulParts = [
+	const raw = [
 		event,
 		action,
 		data.id,
 		data.status,
-		data.title,
-		data.description,
-		JSON.stringify((data.assignees || []).sort((a, b) => a.id.localeCompare(b.id)))
-	];
+		JSON.stringify((data.assignees || []).map(a => a.id).sort()), // только ID
+	].join('::');
 
-	const raw = meaningfulParts.join('::');
 	const hash = crypto.createHash('md5').update(raw).digest('hex');
 	console.log(`🔑 Сгенерирован fingerprint: ${hash} ← (${raw})`);
 	return hash;
 }
 
-
-
-function isDuplicateEvent(eventPayload) {
-	const fingerprint = getEventFingerprint(eventPayload);
+function isDuplicateEvent(payload) {
+	const fingerprint = getEventFingerprint(payload);
 	if (!fingerprint) return false;
 
 	if (processedEvents.has(fingerprint)) {
