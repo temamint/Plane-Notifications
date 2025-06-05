@@ -7,6 +7,8 @@ function getEventFingerprint({ event, action, data }) {
 		return null;
 	}
 
+	console.log(data);
+
 	const raw = [
 		event,
 		action,
