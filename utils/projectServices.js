@@ -12,7 +12,10 @@ async function loadProjects() {
 		const results = response.data?.results || [];
 
 		for (const p of results) {
-			global.projectMap.set(p.id, p.name);
+			global.projectMap.set(p.id, {
+				name: p.name,
+				identifier: p.identifier,
+			});
 		}
 
 		console.log(`📦 Загружено проектов: ${global.projectMap.size}`);
@@ -28,13 +31,19 @@ async function ensureProjectsLoaded() {
 }
 
 async function getProjectNameById(id) {
-	console.log('ID from webhook:', id);
-	console.log('projectMap:', global.projectMap);
-	return global.projectMap.get(id) || `Unknown (${id})`;
+	const project = global.projectMap.get(id);
+	return project?.name || `Unknown (${id})`;
 }
+
+async function getProjectIdentifierById(id) {
+	const project = global.projectMap.get(id);
+	return project?.identifier || `unknown`;
+}
+
 
 module.exports = {
 	loadProjects,
 	ensureProjectsLoaded,
 	getProjectNameById,
+	getProjectIdentifierById
 };

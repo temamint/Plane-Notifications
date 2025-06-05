@@ -1,6 +1,6 @@
 const TurndownService = require('turndown');
 const turndownService = new TurndownService();
-const { getProjectNameById } = require('./projectServices');
+const { getProjectNameById, getProjectIdentifierById } = require('./projectServices');
 const { getUserName } = require('./projectMemberServices');
 
 function getIssueTitle(action) {
@@ -36,12 +36,15 @@ async function formatIssueMessage(action, data) {
 	}
 
 	const title = getIssueTitle(action);
+	const projectIdentifier = await getProjectIdentifierById(project.id);
+	const issueKey = `${projectIdentifier}-${data.sequence_id}`;
 
 	const message = `${title}
 *Проект:* ${await getProjectNameById(data.project)}
 *Название:* ${data.name || 'Без названия'}
 *Описание:* ${description}
-*Автор:* ${await getUserName(data.project, data.updated_by)}`;
+*Автор:* ${await getUserName(data.project, data.updated_by)}
+*Ссылка:* https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${issueKey}/`;
 
 	console.log(`Сформированное сообщение: ${message}`);
 
