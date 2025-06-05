@@ -8,13 +8,23 @@ function getEventFingerprint({ event, action, data }) {
 		console.log('❗ Невозможно сгенерировать fingerprint — отсутствует data.id');
 		return null;
 	}
-	const updatedAt = data.updated_at || data.created_at || '';
-	const trimmedTime = updatedAt.split('.')[0];
-	const raw = `${event}-${action}-${data.id}-${trimmedTime}`;
+
+	const meaningfulParts = [
+		event,
+		action,
+		data.id,
+		data.status,
+		data.title,
+		data.description,
+		JSON.stringify((data.assignees || []).sort((a, b) => a.id.localeCompare(b.id)))
+	];
+
+	const raw = meaningfulParts.join('::');
 	const hash = crypto.createHash('md5').update(raw).digest('hex');
 	console.log(`🔑 Сгенерирован fingerprint: ${hash} ← (${raw})`);
 	return hash;
 }
+
 
 
 function isDuplicateEvent(eventPayload) {
