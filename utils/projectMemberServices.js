@@ -20,7 +20,7 @@ async function fetchProjectMembers(projectId) {
 
 	try {
 		const response = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/members/`);
-		const members = response.data?.results || [];
+		const members = response.data || [];
 
 		console.log(`📦 Загружены участники: ${members}`);
 
