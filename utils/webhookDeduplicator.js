@@ -14,6 +14,8 @@ function getEventFingerprint({ event, action, data }) {
 		action,
 		data.id,
 		data.status,
+		data.state.id,
+		data.assignees.length,
 		JSON.stringify((data.assignees || []).map(a => a.id).sort())
 	].join('::');
 
