@@ -8,6 +8,9 @@ const { getTelegramIdByPlaneUserId } = require('../utils/userService');
 
 
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
+	const eventId = req.headers['x-plane-event-id'] || 'no-event-id';
+	console.log(`📩 Webhook Event ID: ${eventId}`);
+
 	console.log('📩 Получен вебхук:', req.headers, req.body);
 
 	if (!verifySignature(req)) {
