@@ -32,4 +32,10 @@ function isDuplicateEvent(eventPayload) {
 		processedEvents.delete(fingerprint);
 	}, TTL);
 
-	ret
+	return false;
+}
+
+module.exports = {
+	isDuplicateEvent,
+	getEventFingerprint,
+};
