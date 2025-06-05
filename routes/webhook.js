@@ -20,6 +20,9 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 		const parsedBody = JSON.parse(req.body.toString());
 		const { event, action, data } = parsedBody;
 
+		console.log(`ВОТ ДАТА: ${JSON.stringify(data)}`);
+		// console.log(`ВОТ OLD: ${JSON.stringify(data.old)}`);
+
 		if (await isDuplicateEvent({ event, action, data })) {
 			return res.status(200).send('Duplicate event ignored');
 		}
