@@ -16,7 +16,7 @@ async function getIssueActivities(projectId, issueId) {
 function extractLatestFieldChanges(activities) {
 	return activities
 		.filter(a => a.verb === 'updated' && a.field)
-		.slice(-5)
+		.slice(-1)
 		.map(a => `— *${a.field}*: ${a.old_value || '—'} → ${a.new_value || '—'}`);
 }
 

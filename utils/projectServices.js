@@ -29,6 +29,7 @@ async function ensureProjectsLoaded() {
 	await loadProjects();
 }
 
+// пока что нигде не используется
 async function getProjectNameById(id) {
 	const project = global.projectMap.get(id);
 	return project?.name || `Unknown (${id})`;

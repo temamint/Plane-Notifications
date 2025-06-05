@@ -1,6 +1,6 @@
 const TurndownService = require('turndown');
 const turndownService = new TurndownService();
-const { getProjectNameById, getProjectIdentifierById } = require('./projectServices');
+const { getProjectIdentifierById } = require('./projectServices');
 const { getUserName } = require('./projectMemberServices');
 const { getIssueActivities, extractLatestFieldChanges } = require('./issueActivityService');
 
@@ -45,19 +45,14 @@ async function formatIssueMessage(action, data) {
 	console.log(`📦 Активность по задаче ${issueKey}:`, activities);
 	const changes = extractLatestFieldChanges(activities);
 
-	let changesText = '';
-	if (changes.length > 0) {
-		changesText = `🛠 Изменения:\n${changes.join('\n')}`;
-	}
+	let changesText = changes ? changes : 'Нет изменений';
 
 	const message = `${title}
-*Проект:* ${await getProjectNameById(data.project)}
 *Название задачи:* ${data.name || 'Без названия'} ([${issueKey}](${issueUrl}))
 *Описание:* ${description}
 *Автор:* ${await getUserName(data.project, data.updated_by)}
 
-*Последние изменения:*
-${changesText}`;
+*🛠 Изменения:* ${changesText}`;
 
 	console.log(`Сформированное сообщение: ${message}`);
 
@@ -72,7 +67,6 @@ async function formatCommentMessage(action, data) {
 	const title = getCommentTitle(action);
 
 	return `${title}
-*Проект:* ${await getProjectNameById(data.project)}
 *Автор комментария:* ${await getUserName(data.project, data.created_by)}
 *Содержание:* ${content}`;
 }
