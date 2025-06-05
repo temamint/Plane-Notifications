@@ -1,6 +1,7 @@
 const { planeApi } = require('./planeApi');
 
 async function getIssueActivities(projectId, issueId) {
+	console.log(`📦 Загружаем активность по задаче ${issueId}, проект ${projectId}`);
 	try {
 		const response = await planeApi.get(
 			`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/issues/${issueId}/activities/`
