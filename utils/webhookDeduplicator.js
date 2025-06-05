@@ -35,18 +35,20 @@ async function isDuplicateEvent(payload) {
 		return true;
 	}
 
+	// Пытаемся вставить
 	const { error: insertError } = await supabase
 		.from('deduplicated_events')
-		.insert({ fingerprint });
+		.insert({ fingerprint }, { upsert: false });
 
 	if (insertError) {
-		console.error('❌ Ошибка вставки fingerprint:', insertError);
-		return false; // fail-open: пропускаем защиту, но не падаем
+		console.error('❌ Ошибка при вставке fingerprint:', insertError.message);
+		return true;
 	}
 
 	console.log(`✅ Уникальное событие, записано: ${fingerprint}`);
 	return false;
 }
+
 
 module.exports = {
 	isDuplicateEvent,
