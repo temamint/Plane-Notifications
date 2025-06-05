@@ -60,7 +60,6 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 			await sendTelegramMessage(message);
 			res.status(200).send('Обработано');
 		}
-		res.status(200).send('Обработано');
 	} catch (error) {
 		console.error('Ошибка при обработке вебхука:', error);
 		res.status(500).send('Ошибка при обработке вебхука');
