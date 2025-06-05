@@ -15,9 +15,9 @@ async function getIssueActivities(projectId, issueId) {
 
 function extractLatestFieldChanges(activities) {
 	return activities
-		.filter(a => a.action_type === 'updated' && a.field_name)
-		.slice(-5) // только последние 5 изменений
-		.map(a => `— *${a.field_name}*: ${a.from_value || '—'} → ${a.to_value || '—'}`);
+		.filter(a => a.verb === 'updated' && a.field)
+		.slice(-5)
+		.map(a => `— *${a.field}*: ${a.old_value || '—'} → ${a.new_value || '—'}`);
 }
 
 
