@@ -2,7 +2,7 @@ const TurndownService = require('turndown');
 const turndownService = new TurndownService();
 const { getProjectNameById, getProjectIdentifierById } = require('./projectServices');
 const { getUserName } = require('./projectMemberServices');
-const { getIssueActivities, extractLatestFieldChanges } = require('./utils/issueActivityService');
+const { getIssueActivities, extractLatestFieldChanges } = require('./issueActivityService');
 
 function getIssueTitle(action) {
 	switch (action) {
