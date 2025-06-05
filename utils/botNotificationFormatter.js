@@ -2,6 +2,7 @@ const TurndownService = require('turndown');
 const turndownService = new TurndownService();
 const { getProjectNameById, getProjectIdentifierById } = require('./projectServices');
 const { getUserName } = require('./projectMemberServices');
+const { getIssueActivities, extractLatestFieldChanges } = require('./utils/issueActivityService');
 
 function getIssueTitle(action) {
 	switch (action) {
@@ -38,13 +39,24 @@ async function formatIssueMessage(action, data) {
 	const title = getIssueTitle(action);
 	const projectIdentifier = await getProjectIdentifierById(data.project);
 	const issueKey = `${projectIdentifier}-${data.sequence_id}`;
+	const issueUrl = `https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${issueKey}/`;
+
+	const activities = await getIssueActivities(data.project, data.id);
+	const changes = extractLatestFieldChanges(activities);
+
+	let changesText = '';
+	if (changes.length > 0) {
+		changesText = `🛠 Изменения:\n${changes.join('\n')}`;
+	}
 
 	const message = `${title}
 *Проект:* ${await getProjectNameById(data.project)}
-*Название:* ${data.name || 'Без названия'}
+*Название задачи:* ${data.name || 'Без названия'} ([${issueKey}](${issueUrl}))
 *Описание:* ${description}
 *Автор:* ${await getUserName(data.project, data.updated_by)}
-*Ссылка:* https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${issueKey}/`;
+
+*Последние изменения:*
+${changesText}`;
 
 	console.log(`Сформированное сообщение: ${message}`);
 
