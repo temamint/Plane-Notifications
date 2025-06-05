@@ -16,6 +16,7 @@ function getEventFingerprint({ event, action, data }) {
 		data.status,
 		data.state.id,
 		data.assignees.length,
+		data.updated_at ? new Date(data.updated_at).toISOString().slice(0, 16) : '',
 		JSON.stringify((data.assignees || []).map(a => a.id).sort())
 	].join('::');
 
