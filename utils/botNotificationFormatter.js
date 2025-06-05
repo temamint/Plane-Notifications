@@ -42,6 +42,7 @@ async function formatIssueMessage(action, data) {
 	const issueUrl = `https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${issueKey}/`;
 
 	const activities = await getIssueActivities(data.project, data.id);
+	console.log(`📦 Активность по задаче ${issueKey}:`, activities);
 	const changes = extractLatestFieldChanges(activities);
 
 	let changesText = '';
