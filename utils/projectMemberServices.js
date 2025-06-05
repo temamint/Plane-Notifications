@@ -12,7 +12,7 @@ function isCacheFresh(entry) {
 async function fetchProjectMembers(projectId) {
 	console.log('📦 Загрузка участников проекта из кэша...');
 	const cached = memberCache.get(projectId);
-	console.log(`📦 Загружены участники из кэша: ${cached?.userMap}`);
+	console.log(`📦 Загружены участники из кэша: ${cached?.userMap ? [...cached.userMap.values()].join(', ') : 'нет'}`);
 	if (isCacheFresh(cached)) {
 		console.log('📦 Кэш актуален');
 		return cached.userMap;
@@ -32,7 +32,10 @@ async function fetchProjectMembers(projectId) {
 			}
 		});
 
-		memberCache.set(projectId, userMap);
+		memberCache.set(projectId, {
+			timestamp: Date.now(),
+			userMap
+		});
 
 		return userMap;
 	} catch (err) {
