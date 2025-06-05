@@ -10,7 +10,6 @@ function isCacheFresh(entry) {
 }
 
 async function fetchProjectMembers(projectId) {
-	console.log('📦 Загрузка участников проекта из кэша...');
 	const cached = memberCache.get(projectId);
 	console.log(`📦 Загружены участники из кэша: ${cached?.userMap ? [...cached.userMap.values()].join(', ') : 'нет'}`);
 	if (isCacheFresh(cached)) {
@@ -45,9 +44,7 @@ async function fetchProjectMembers(projectId) {
 }
 
 async function getUserName(projectId, userId) {
-	console.log('UserID from webhook:', userId);
 	const projectCache = await fetchProjectMembers(projectId);
-	console.log('projectCache:', projectCache);
 	return projectCache.get(userId) || `Unknown (${userId})`;
 }
 

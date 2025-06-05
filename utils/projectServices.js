@@ -7,7 +7,6 @@ if (!global.projectMap) {
 
 async function loadProjects() {
 	try {
-		console.log('📦 Загрузка проектов...');
 		const response = await planeApi.get(`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/`);
 		const results = response.data?.results || [];
 

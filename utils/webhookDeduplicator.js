@@ -7,8 +7,6 @@ function getEventFingerprint({ event, action, data }) {
 		return null;
 	}
 
-	console.log(data);
-
 	const raw = [
 		event,
 		action,
@@ -21,7 +19,6 @@ function getEventFingerprint({ event, action, data }) {
 	].join('::');
 
 	const hash = crypto.createHash('md5').update(raw).digest('hex');
-	console.log(`🔑 Сгенерирован fingerprint: ${hash} ← (${raw})`);
 	return hash;
 }
 

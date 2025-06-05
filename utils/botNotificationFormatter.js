@@ -36,7 +36,7 @@ async function formatIssueMessage(action, data) {
 	}
 
 	const title = getIssueTitle(action);
-	const projectIdentifier = await getProjectIdentifierById(project.id);
+	const projectIdentifier = await getProjectIdentifierById(data.project);
 	const issueKey = `${projectIdentifier}-${data.sequence_id}`;
 
 	const message = `${title}

@@ -8,9 +8,6 @@ const { getTelegramIdByPlaneUserId } = require('../utils/userService');
 const { isDuplicateEvent } = require('../utils/webhookDeduplicator');
 
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
-	const eventId = req.headers['x-plane-event-id'] || 'no-event-id';
-	console.log(`📩 Webhook Event ID: ${eventId}`);
-
 	console.log('📩 Получен вебхук:', req.headers, req.body);
 
 	if (!verifySignature(req)) {
@@ -24,7 +21,6 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 		const { event, action, data } = parsedBody;
 
 		if (await isDuplicateEvent({ event, action, data })) {
-			console.log(`⚠️ Повтор события (${eventId}), игнор`);
 			return res.status(200).send('Duplicate event ignored');
 		}
 
