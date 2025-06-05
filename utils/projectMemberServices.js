@@ -45,7 +45,9 @@ async function fetchProjectMembers(projectId) {
 }
 
 async function getUserName(projectId, userId) {
+	console.log('UserID from webhook:', userId);
 	const projectCache = await fetchProjectMembers(projectId);
+	console.log('projectCache:', projectCache);
 	return projectCache.get(userId) || `Unknown (${userId})`;
 }
 
