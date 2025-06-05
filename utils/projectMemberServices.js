@@ -42,8 +42,8 @@ async function fetchProjectMembers(projectId) {
 }
 
 async function getUserName(projectId, userId) {
-	const membersMap = await fetchProjectMembers(projectId);
-	return membersMap.get(userId) || `Unknown (${userId})`;
+	const projectCache = await fetchProjectMembers(projectId);
+	return projectCache.get(userId) || `Unknown (${userId})`;
 }
 
 module.exports = {
