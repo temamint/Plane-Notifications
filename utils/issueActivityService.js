@@ -6,7 +6,7 @@ async function getIssueActivities(projectId, issueId) {
 		const response = await planeApi.get(
 			`/workspaces/${process.env.PLANE_WORKSPACE_SLUG}/projects/${projectId}/issues/${issueId}/activities/`
 		);
-		return response.data || [];
+		return response.data.results || [];
 	} catch (error) {
 		console.error('❌ Не удалось получить активность по задаче:', error.message);
 		return [];
