@@ -9,11 +9,13 @@ function getEventFingerprint({ event, action, data }) {
 		return null;
 	}
 	const updatedAt = data.updated_at || data.created_at || '';
-	const raw = `${event}-${action}-${data.id}-${updatedAt}`;
+	const trimmedTime = updatedAt.split('.')[0];
+	const raw = `${event}-${action}-${data.id}-${trimmedTime}`;
 	const hash = crypto.createHash('md5').update(raw).digest('hex');
 	console.log(`🔑 Сгенерирован fingerprint: ${hash} ← (${raw})`);
 	return hash;
 }
+
 
 function isDuplicateEvent(eventPayload) {
 	const fingerprint = getEventFingerprint(eventPayload);
