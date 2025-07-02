@@ -1,14 +1,8 @@
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 const { saveTelegramUserInfo } = require('./utils/userService');
-
-const {
-	getIssueDetailsMessage, // ты потом напишешь эту функцию
-	getAllDetailsMessage    // тоже напишешь
-} = require('./utils/messageFormatter');
-const {
-	sendTelegramMessage // пока не используется, на будущее
-} = require('./utils/telegram');
+const { getIssueDetailsMessage, getAllDetailsMessage } = require('./utils/botNotificationFormatter');
+const { sendTelegramMessage } = require('./utils/telegram');
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
