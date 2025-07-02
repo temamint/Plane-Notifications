@@ -6,6 +6,8 @@ const { sendTelegramMessage } = require('./utils/telegram');
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
+console.log('Бот стартует...');
+
 // Сохраняем данные пользователя при любом сообщении
 bot.on('message', (msg) => {
 	const user = msg.from;
