@@ -6,6 +6,7 @@ const {
 	getLastMessage,
 	setLastMessage
 } = require('./notificationBuffer');
+const { escapeMarkdown } = require('./markdownFormatter');
 
 /**
  * Отправляет сводное уведомление с кнопками
@@ -25,9 +26,10 @@ async function sendSummaryNotification(chatId) {
 		}
 	}
 
-	// Формируем текст
+
 	const text = `🔔 *${notifs.length} новых обновлений:*\n\n` +
-		notifs.map(n => `• ${n.emoji || '📝'} *${n.issueKey}* — ${n.title}`).join('\n');
+		notifs.map(n => `• ${n.emoji || '📝'} *${escapeMarkdown(n.issueKey)}* — ${escapeMarkdown(n.title)}`).join('\n');
+
 
 	// Кнопки
 	const buttons = [
