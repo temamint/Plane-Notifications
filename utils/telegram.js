@@ -22,7 +22,10 @@ async function sendSummaryNotification(chatId) {
 	const lastMessageId = getLastMessage(chatId);
 	if (lastMessageId) {
 		try {
+			console.log(`🗑 Пытаемся удалить сообщение ${lastMessageId} из чата ${chatId}`);
 			await bot.deleteMessage(chatId, lastMessageId);
+			console.log(`✅ Удалено сообщение ${lastMessageId}`);
+
 			console.log(`🗑 Удалено предыдущее сообщение ${lastMessageId} в чате ${chatId}`);
 		} catch (err) {
 			console.warn(`⚠️ Не удалось удалить сообщение ${lastMessageId} в чате ${chatId}:`, err.message);

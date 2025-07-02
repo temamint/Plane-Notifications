@@ -7,8 +7,15 @@ function addNotification(chatId, notif) {
 	if (!notificationMap.has(chatId)) {
 		notificationMap.set(chatId, []);
 	}
-	notificationMap.get(chatId).push(notif);
+
+	const existing = notificationMap.get(chatId);
+	const alreadyExists = existing.some(n => n.issueId === notif.issueId);
+
+	if (!alreadyExists) {
+		existing.push(notif);
+	}
 }
+
 
 function getNotifications(chatId) {
 	return notificationMap.get(chatId) || [];
