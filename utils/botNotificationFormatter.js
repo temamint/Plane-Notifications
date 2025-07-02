@@ -3,6 +3,8 @@ const turndownService = new TurndownService();
 const { getProjectIdentifierById } = require('./projectServices');
 const { getUserName } = require('./projectMemberServices');
 const { getIssueActivities, extractLatestFieldChanges } = require('./issueActivityService');
+const { planeApi } = require('./planeApi');
+const { getNotifications } = require('./notificationBuffer');
 
 function getIssueTitle(action) {
 	switch (action) {
@@ -21,7 +23,6 @@ function getCommentTitle(action) {
 		default: return `*COMMENT* (${action})`;
 	}
 }
-
 
 async function formatIssueMessage(action, data) {
 	let description = 'N/A';
@@ -42,10 +43,8 @@ async function formatIssueMessage(action, data) {
 	const issueUrl = `https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${issueKey}/`;
 
 	const activities = await getIssueActivities(data.project, data.id);
-	console.log(`📦 Активность по задаче ${issueKey}:`, activities);
 	const changes = extractLatestFieldChanges(activities);
-
-	let changesText = changes ? changes : 'Нет изменений';
+	const changesText = changes ? changes : 'Нет изменений';
 
 	const message = `${title}
 *Название задачи:* ${data.name || 'Без названия'} ([${issueKey}](${issueUrl}))
@@ -53,8 +52,6 @@ async function formatIssueMessage(action, data) {
 *Автор:* ${await getUserName(data.project, data.updated_by)}
 
 *🛠 Изменения:* ${changesText}`;
-
-	console.log(`Сформированное сообщение: ${message}`);
 
 	return message;
 }
@@ -71,7 +68,39 @@ async function formatCommentMessage(action, data) {
 *Содержание:* ${content}`;
 }
 
+async function getIssueDetailsMessage(issueId) {
+	try {
+		const res = await planeApi.get(`/issues/${issueId}/`);
+		const issue = res.data;
+		return await formatIssueMessage('updated', issue);
+	} catch (err) {
+		console.error('❌ Не удалось получить задачу:', err.message);
+		return '❌ Не удалось загрузить задачу';
+	}
+}
+
+async function getAllDetailsMessage(chatId) {
+	const notifications = getNotifications(chatId);
+	if (!notifications?.length) return 'Нет новых уведомлений.';
+
+	let fullText = `🔔 Детали по ${notifications.length} задачам:\n\n`;
+
+	for (const notif of notifications) {
+		try {
+			const res = await planeApi.get(`/issues/${notif.issueId}/`);
+			const msg = await formatIssueMessage('updated', res.data);
+			fullText += msg + '\n\n';
+		} catch (err) {
+			fullText += `⚠️ Не удалось загрузить ${notif.issueKey}\n\n`;
+		}
+	}
+
+	return fullText;
+}
+
 module.exports = {
 	formatIssueMessage,
-	formatCommentMessage
+	formatCommentMessage,
+	getIssueDetailsMessage,
+	getAllDetailsMessage
 };

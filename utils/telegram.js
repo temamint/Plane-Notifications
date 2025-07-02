@@ -1,25 +1,53 @@
-const axios = require('axios');
-require('dotenv').config();
+// utils/telegram.js
+const bot = require('../bot');
+const {
+	getNotifications,
+	clearNotifications,
+	getLastMessage,
+	setLastMessage
+} = require('./notificationBuffer');
 
-async function sendTelegramMessage(text, chatId = null) {
-	const targetId = chatId || process.env.CHAT_ID;
+/**
+ * Отправляет сводное уведомление с кнопками
+ * @param {number} chatId — кому отправить
+ */
+async function sendSummaryNotification(chatId) {
+	const notifs = getNotifications(chatId);
+	if (!notifs.length) return;
 
-	if (!targetId) {
-		console.error('❌ Не указан chat_id ни в параметре, ни в .env');
-		return;
+	// Удаляем предыдущее сообщение
+	const lastMessageId = getLastMessage(chatId);
+	if (lastMessageId) {
+		try {
+			await bot.deleteMessage(chatId, lastMessageId);
+		} catch (err) {
+			console.warn('❌ Не удалось удалить старое сообщение:', err.message);
+		}
 	}
 
-	const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+	// Формируем текст
+	const text = `🔔 *${notifs.length} новых обновлений:*\n\n` +
+		notifs.map(n => `• ${n.emoji || '📝'} *${n.issueKey}* — ${n.title}`).join('\n');
 
-	try {
-		await axios.post(url, {
-			chat_id: targetId,
-			text,
-			parse_mode: 'Markdown'
-		});
-	} catch (error) {
-		console.error(`Ошибка при отправке в Telegram чат ${targetId}:`, error.response?.data || error.message);
-	}
+	// Кнопки
+	const buttons = [
+		...notifs.map(n => [{ text: `📄 ${n.issueKey}`, callback_data: `detail_${n.issueId}` }]),
+		[{ text: '👀 Посмотреть всё', callback_data: `view_all` }],
+		[{ text: '❌ Закрыть', callback_data: 'close_summary' }]
+	];
+
+	// Отправляем новое
+	const message = await bot.sendMessage(chatId, text, {
+		parse_mode: 'Markdown',
+		reply_markup: {
+			inline_keyboard: buttons
+		}
+	});
+
+	setLastMessage(chatId, message.message_id);
+	clearNotifications(chatId);
 }
 
-module.exports = { sendTelegramMessage };
+module.exports = {
+	sendSummaryNotification
+};
