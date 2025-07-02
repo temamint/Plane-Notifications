@@ -12,45 +12,33 @@ function getEventFingerprint({ event, action, data }) {
 		action,
 		data.id,
 		data.status,
-		data.state.id,
-		data.assignees.length,
+		data.state?.id || '',
+		data.assignees?.length || 0,
 		data.updated_at ? new Date(data.updated_at).toISOString().slice(0, 16) : '',
 		JSON.stringify((data.assignees || []).map(a => a.id).sort())
 	].join('::');
 
-	const hash = crypto.createHash('md5').update(raw).digest('hex');
-	return hash;
+	return crypto.createHash('md5').update(raw).digest('hex');
 }
 
 async function isDuplicateEvent(payload) {
 	const fingerprint = getEventFingerprint(payload);
 	if (!fingerprint) return false;
 
-	const { data, error } = await supabase
+	// Пытаемся вставить (если уже есть — ничего не меняем)
+	const { error } = await supabase
 		.from('deduplicated_events')
-		.select('fingerprint')
-		.eq('fingerprint', fingerprint)
-		.maybeSingle();
+		.upsert({ fingerprint }, { onConflict: ['fingerprint'] });
 
-	if (data) {
-		console.log(`⚠️ Повтор события: ${fingerprint}`);
+	if (error) {
+		console.error('❌ Supabase error при upsert fingerprint:', error.message);
+		// на всякий случай считаем дубликатом
 		return true;
 	}
 
-	// Пытаемся вставить
-	const { error: insertError } = await supabase
-		.from('deduplicated_events')
-		.insert({ fingerprint }, { upsert: false });
-
-	if (insertError) {
-		console.error('❌ Ошибка при вставке fingerprint:', insertError.message);
-		return true;
-	}
-
-	console.log(`✅ Уникальное событие, записано: ${fingerprint}`);
+	console.log(`✅ Fingerprint обработан (новый или уже существующий): ${fingerprint}`);
 	return false;
 }
-
 
 module.exports = {
 	isDuplicateEvent,

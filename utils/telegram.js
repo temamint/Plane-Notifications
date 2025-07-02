@@ -1,4 +1,3 @@
-// utils/telegram.js
 const bot = require('../bot');
 const {
 	getNotifications,
@@ -14,40 +13,47 @@ const { escapeMarkdown } = require('./markdownFormatter');
  */
 async function sendSummaryNotification(chatId) {
 	const notifs = getNotifications(chatId);
-	if (!notifs.length) return;
+	if (!notifs.length) {
+		console.log(`ℹ️ Нет уведомлений для отправки в чат ${chatId}`);
+		return;
+	}
 
-	// Удаляем предыдущее сообщение
+	// Удаляем предыдущее сообщение, если есть
 	const lastMessageId = getLastMessage(chatId);
 	if (lastMessageId) {
 		try {
 			await bot.deleteMessage(chatId, lastMessageId);
+			console.log(`🗑 Удалено предыдущее сообщение ${lastMessageId} в чате ${chatId}`);
 		} catch (err) {
-			console.warn('❌ Не удалось удалить старое сообщение:', err.message);
+			console.warn(`⚠️ Не удалось удалить сообщение ${lastMessageId} в чате ${chatId}:`, err.message);
 		}
 	}
 
-
 	const text = `🔔 *${notifs.length} новых обновлений:*\n\n` +
-		notifs.map(n => `• ${n.emoji || '📝'} *${escapeMarkdown(n.issueKey)}* — ${escapeMarkdown(n.title)}`).join('\n');
+		notifs.map(n =>
+			`• ${n.emoji || '📝'} *${escapeMarkdown(n.issueKey)}* — ${escapeMarkdown(n.title)}`
+		).join('\n');
 
-
-	// Кнопки
 	const buttons = [
 		...notifs.map(n => [{ text: `📄 ${n.issueKey}`, callback_data: `detail_${n.issueId}` }]),
 		[{ text: '👀 Посмотреть всё', callback_data: `view_all` }],
 		[{ text: '❌ Закрыть', callback_data: 'close_summary' }]
 	];
 
-	// Отправляем новое
-	const message = await bot.sendMessage(chatId, text, {
-		parse_mode: 'Markdown',
-		reply_markup: {
-			inline_keyboard: buttons
-		}
-	});
+	try {
+		const message = await bot.sendMessage(chatId, text, {
+			parse_mode: 'Markdown',
+			reply_markup: {
+				inline_keyboard: buttons
+			}
+		});
 
-	setLastMessage(chatId, message.message_id);
-	clearNotifications(chatId);
+		setLastMessage(chatId, message.message_id);
+		console.log(`✅ Новое сообщение отправлено (ID: ${message.message_id}) в чат ${chatId}`);
+		clearNotifications(chatId);
+	} catch (err) {
+		console.error(`❌ Ошибка при отправке уведомления в чат ${chatId}:`, err.message);
+	}
 }
 
 module.exports = {
