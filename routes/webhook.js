@@ -78,6 +78,7 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 
 					if (!getTimer(tgId)) {
 						const timeoutId = setTimeout(async () => {
+							console.log(`[webhook] setTimeout fired for chatId: ${tgId}`);
 							try {
 								console.log(`[webhook] Timer triggered for chatId: ${tgId}, calling sendSummaryNotification`);
 								await sendSummaryNotification(tgId);
