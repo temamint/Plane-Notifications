@@ -5,7 +5,7 @@ const { formatIssueMessage, formatCommentMessage } = require('../utils/botNotifi
 const { ensureProjectsLoaded, getProjectIdentifierById } = require('../utils/projectServices');
 const { getTelegramIdByPlaneUserId } = require('../utils/userService');
 const { isDuplicateEvent } = require('../utils/webhookDeduplicator');
-const { addNotification } = require('../utils/notificationBuffer');
+const { addNotification, setTimer, getTimer, clearTimer } = require('../utils/notificationBuffer');
 const { sendSummaryNotification } = require('../utils/telegram');
 
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -49,13 +49,31 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 			for (const planeUserId of userIds) {
 				const tgId = getTelegramIdByPlaneUserId(planeUserId);
 				if (tgId) {
-					addNotification(tgId, {
-						issueId: data.id,
-						issueKey,
-						title: data.name,
-						emoji: action === 'created' ? '🆕' : '✏️'
-					});
-					await sendSummaryNotification(tgId); // можно debounce’ить
+					try {
+						await addNotification(tgId, {
+							issueId: data.id,
+							issueKey,
+							title: data.name,
+							emoji: action === 'created' ? '🆕' : '✏️'
+						});
+					} catch (err) {
+						console.error(`❌ Ошибка Supabase при добавлении уведомления для ${tgId}:`, err.message);
+						continue;
+					}
+
+					// Таймерная отправка: если таймера нет — ставим на 5 секунд
+					if (!getTimer(tgId)) {
+						const timeoutId = setTimeout(async () => {
+							try {
+								await sendSummaryNotification(tgId);
+							} catch (e) {
+								console.error('Ошибка при отправке сводного уведомления:', e);
+							}
+							clearTimer(tgId);
+						}, 5000);
+						setTimer(tgId, timeoutId);
+					}
+
 					sentCount++;
 				}
 			}

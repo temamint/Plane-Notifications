@@ -1,6 +1,7 @@
 # Plane Webhook + Projects Viewer Bot
 
 Node.js сервер для:
+
 - получения вебхуков от [Plane.so](https://plane.so) и отправки уведомлений в Telegram,
 - отображения списка проектов из Plane по маршруту `/projects`.
 
@@ -43,11 +44,13 @@ PORT=3000
 ## 🚀 Запуск
 
 1. Установи зависимости:
+
    ```bash
    npm install
    ```
 
 2. Запусти сервер:
+
    ```bash
    node index.js
    ```
@@ -59,6 +62,7 @@ PORT=3000
 ## 📦 Deployment
 
 На Vercel:
+
 - `.env` переменные добавляются через Dashboard.
 - Эндпоинты `/webhook` и `/projects` работают как обычные Express-маршруты.
 
@@ -73,3 +77,28 @@ PORT=3000
 ## 👨‍💻 Авторизация пользователей
 
 Сопоставление ID пользователей в `webhook.js` — через `userMap`, обновляемый вручную.
+
+---
+
+## SQL для создания таблицы уведомлений в Supabase
+
+```sql
+create table notifications (
+  id uuid primary key default gen_random_uuid(),
+  chat_id bigint not null,
+  issue_id text not null,
+  issue_key text not null,
+  title text not null,
+  emoji text,
+  status text not null default 'unread', -- unread, sent, read
+  created_at timestamptz not null default now(),
+  sent_at timestamptz,
+  read_at timestamptz
+);
+
+create index notifications_chat_id_idx on notifications(chat_id);
+create index notifications_status_idx on notifications(status);
+create index notifications_issue_id_idx on notifications(issue_id);
+```
+
+---
