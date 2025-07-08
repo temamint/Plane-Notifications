@@ -2,13 +2,10 @@
 
 const { supabase } = require('./supabaseClient');
 
-// In-memory таймеры и lastMessageMap
-const timers = new Map(); // chatId → timeoutId
-const lastMessageMap = new Map(); // chatId → messageId
+const timers = new Map();
+const lastMessageMap = new Map();
 
-// Добавить уведомление в Supabase
 async function addNotification(chatId, notif) {
-	// Дедупликация: не добавлять, если уже есть непрочитанное по этому issueId
 	const { data: existing, error: err1 } = await supabase
 		.from('notifications')
 		.select('id')
@@ -29,7 +26,6 @@ async function addNotification(chatId, notif) {
 	if (error) throw error;
 }
 
-// Получить все уведомления для chatId с нужным статусом
 async function getNotifications(chatId, statuses = ['unread', 'sent']) {
 	const { data, error } = await supabase
 		.from('notifications')
@@ -41,7 +37,6 @@ async function getNotifications(chatId, statuses = ['unread', 'sent']) {
 	return data || [];
 }
 
-// Пометить уведомления как "sent" (после отправки)
 async function markNotificationsAsSent(chatId, ids) {
 	if (!ids.length) return;
 	const { error } = await supabase
@@ -52,7 +47,6 @@ async function markNotificationsAsSent(chatId, ids) {
 	if (error) throw error;
 }
 
-// Пометить уведомления как "read" (по кнопке или действию пользователя)
 async function markNotificationsAsRead(chatId, ids) {
 	if (!ids.length) return;
 	const { error } = await supabase
@@ -63,7 +57,6 @@ async function markNotificationsAsRead(chatId, ids) {
 	if (error) throw error;
 }
 
-// Очистить все уведомления для chatId (например, старые)
 async function clearNotifications(chatId) {
 	const { error } = await supabase
 		.from('notifications')
@@ -96,7 +89,6 @@ function clearTimer(chatId) {
 	}
 }
 
-// Периодическая очистка старых уведомлений (старше 7 дней)
 async function periodicCleanup() {
 	const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 	try {
@@ -114,7 +106,6 @@ async function periodicCleanup() {
 	}
 }
 
-// Запускать очистку раз в сутки
 setInterval(periodicCleanup, 24 * 60 * 60 * 1000);
 
 module.exports = {
