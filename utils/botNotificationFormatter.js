@@ -26,9 +26,15 @@ function getCommentTitle(action) {
 	}
 }
 
+function escapeMarkdown(text) {
+	if (!text) return '';
+	return text.replace(/([_\*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
+}
+
 async function formatIssueMessage(action, data) {
 	console.info(`[formatIssueMessage] called with action: ${action}, data.id: ${data?.id}`);
 	try {
+		let description = 'N/A';
 		if (typeof data.description_html === 'string' && data.description_html.trim()) {
 			console.log('[formatIssueMessage] Using description_html');
 			description = turndownService.turndown(data.description_html);
@@ -60,12 +66,18 @@ async function formatIssueMessage(action, data) {
 		const author = await getUserName(data.project, data.updated_by);
 		console.log(`[formatIssueMessage] author: ${author}`);
 
-		const message = `${title}
-*Название задачи:* ${data.name || 'Без названия'} ([${issueKey}](${issueUrl}))
-*Описание:* ${description}
-*Автор:* ${author}
+		const safeName = escapeMarkdown(data.name || 'Без названия');
+		const safeDescription = escapeMarkdown(description);
+		const safeAuthor = escapeMarkdown(author);
+		const safeChanges = escapeMarkdown(changesText);
+		const safeIssueKey = escapeMarkdown(issueKey);
 
-*🛠 Изменения:* ${changesText}`;
+		const message = `${title}
+*Название задачи:* ${safeName} ([${safeIssueKey}](${issueUrl}))
+*Описание:* ${safeDescription}
+*Автор:* ${safeAuthor}
+
+*🛠 Изменения:* ${safeChanges}`;
 
 		console.info(`[formatIssueMessage] message length: ${message.length}`);
 		return message;
@@ -86,9 +98,12 @@ async function formatCommentMessage(action, data) {
 		const author = await getUserName(data.project, data.created_by);
 		console.log(`[formatCommentMessage] author: ${author}`);
 
+		const safeAuthor = escapeMarkdown(author);
+		const safeContent = escapeMarkdown(content);
+
 		const result = `${title}
-*Автор комментария:* ${author}
-*Содержание:* ${content}`;
+*Автор комментария:* ${safeAuthor}
+*Содержание:* ${safeContent}`;
 		console.info(`[formatCommentMessage] message length: ${result.length}`);
 		return result;
 	} catch (err) {
