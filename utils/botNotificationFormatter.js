@@ -72,11 +72,11 @@ async function getIssueDetailsMessage(projectId, issueId) {
 	console.log(`[getIssueDetailsMessage] Getting details for projectId: ${projectId}, issueId: ${issueId}`);
 	try {
 		const workspaceSlug = process.env.PLANE_WORKSPACE_SLUG;
-		const url = `/api/v1/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/`;
+		const url = `/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/`;
 		console.log(`[getIssueDetailsMessage] Plane API URL: ${url}`);
 		const res = await planeApi.get(url);
 		console.log(`[getIssueDetailsMessage] Plane API response received for projectId: ${projectId}, issueId: ${issueId}`);
-		const issue = res.data;
+		const issue = res.data.results[0];
 		const result = await formatIssueMessage('updated', issue);
 		console.log(`[getIssueDetailsMessage] Formatted message for projectId: ${projectId}, issueId: ${issueId}, length: ${result.length}`);
 		return result;
