@@ -78,6 +78,25 @@ async function getNotificationByIssueId(issueId) {
 	return data;
 }
 
+async function markNotificationAsReaded(chatId, issueId) {
+	const { error } = await supabase
+		.from('notifications')
+		.update({ status: 'readed', read_at: new Date().toISOString() })
+		.eq('chat_id', chatId)
+		.eq('issue_id', issueId)
+		.in('status', ['unread', 'sent']);
+	if (error) throw error;
+}
+
+async function markAllNotificationsAsReaded(chatId) {
+	const { error } = await supabase
+		.from('notifications')
+		.update({ status: 'readed', read_at: new Date().toISOString() })
+		.eq('chat_id', chatId)
+		.in('status', ['unread', 'sent']);
+	if (error) throw error;
+}
+
 function setLastMessage(chatId, messageId) {
 	lastMessageMap.set(chatId, messageId);
 }
@@ -133,4 +152,6 @@ module.exports = {
 	clearTimer,
 	periodicCleanup,
 	getNotificationByIssueId,
+	markNotificationAsReaded,
+	markAllNotificationsAsReaded,
 };

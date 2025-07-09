@@ -133,7 +133,7 @@ async function getIssueDetailsMessage(projectId, issueId) {
 
 async function getAllDetailsMessage(chatId) {
 	console.log(`[getAllDetailsMessage] Getting all details for chatId: ${chatId}`);
-	const notifications = getNotifications(chatId);
+	const notifications = getNotifications(chatId, ['unread', 'sent']);
 	console.log(`[getAllDetailsMessage] Found ${notifications?.length || 0} notifications for chatId: ${chatId}`);
 	if (!notifications?.length) return 'Нет новых уведомлений.';
 

@@ -51,7 +51,8 @@ bot.on('callback_query', async (query) => {
 				inline_keyboard: [
 					[
 						{ text: 'Открыть в Plane', url: issueUrl },
-						{ text: 'Назад', callback_data: 'back_to_notifications' }
+						{ text: 'Назад', callback_data: 'back_to_notifications' },
+						{ text: '✅ Отметить прочитанным', callback_data: `mark_read_${issueId}` }
 					]
 				]
 			};
@@ -66,6 +67,48 @@ bot.on('callback_query', async (query) => {
 				}
 			);
 			console.log(`[callback_query] Detail message edited for chatId: ${chatId}`);
+		}
+
+		if (data.startsWith('mark_read_')) {
+			const issueId = data.split('_')[2];
+			console.log(`[callback_query] Marking notification as read for issueId: ${issueId}`);
+			// Здесь должна быть функция, которая обновляет статус уведомления на 'readed'
+			const { markNotificationAsReaded } = require('./utils/notificationBuffer');
+			await markNotificationAsReaded(chatId, issueId);
+			await bot.editMessageText('✅ Уведомление отмечено как прочитанное.', {
+				chat_id: chatId,
+				message_id: messageId
+			});
+			return;
+		}
+
+		if (data === 'mark_all_read_confirm') {
+			const replyMarkup = {
+				inline_keyboard: [
+					[
+						{ text: 'Да, отметить всё', callback_data: 'mark_all_read' },
+						{ text: 'Отмена', callback_data: 'back_to_notifications' }
+					]
+				]
+			};
+			await bot.editMessageText('Вы уверены, что хотите отметить все уведомления как прочитанные?', {
+				chat_id: chatId,
+				message_id: messageId,
+				reply_markup: replyMarkup
+			});
+			return;
+		}
+
+		if (data === 'mark_all_read') {
+			console.log(`[callback_query] Marking all notifications as read for chatId: ${chatId}`);
+			// Здесь должна быть функция, которая обновляет все уведомления на 'readed'
+			const { markAllNotificationsAsReaded } = require('./utils/notificationBuffer');
+			await markAllNotificationsAsReaded(chatId);
+			await bot.editMessageText('✅ Все уведомления отмечены как прочитанные.', {
+				chat_id: chatId,
+				message_id: messageId
+			});
+			return;
 		}
 
 		if (data === 'back_to_notifications' || data === 'view_all') {
