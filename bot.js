@@ -32,23 +32,51 @@ bot.on('callback_query', async (query) => {
 			console.log(`[callback_query] Processing detail_ for issueId: ${issueId}`);
 			const notif = await getNotificationByIssueId(issueId);
 			if (!notif || !notif.project_id) {
-				await bot.sendMessage(chatId, '❌ Не удалось найти задачу в базе уведомлений');
+				await bot.editMessageText('❌ Не удалось найти задачу в базе уведомлений', {
+					chat_id: chatId,
+					message_id: messageId,
+					parse_mode: 'Markdown'
+				});
 				return;
 			}
 			const msg = await getIssueDetailsMessage(notif.project_id, issueId);
 			console.log(`[callback_query] getIssueDetailsMessage result: ${msg.substring(0, 100)}...`);
-			await bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
-			console.log(`[callback_query] Detail message sent to chatId: ${chatId}`);
+
+			// Формируем inline-кнопки
+			const issueUrl = `https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${notif.issueKey}/`;
+			const replyMarkup = {
+				inline_keyboard: [
+					[
+						{ text: 'Открыть в Plane', url: issueUrl },
+						{ text: 'Назад', callback_data: 'back_to_notifications' }
+					]
+				]
+			};
+
+			await bot.editMessageText(
+				`Детальное описание изменений задачи [${notif.issueKey}]:\n\n${msg}`,
+				{
+					chat_id: chatId,
+					message_id: messageId,
+					parse_mode: 'Markdown',
+					reply_markup: replyMarkup
+				}
+			);
+			console.log(`[callback_query] Detail message edited for chatId: ${chatId}`);
 		}
 
-		if (data === 'view_all') {
-			console.log(`[callback_query] Processing view_all for chatId: ${chatId}`);
+		if (data === 'back_to_notifications' || data === 'view_all') {
+			console.log(`[callback_query] Processing view_all/back_to_notifications for chatId: ${chatId}`);
 
 			const msg = await getAllDetailsMessage(chatId);
 			console.log(`[callback_query] getAllDetailsMessage result: ${msg.substring(0, 100)}...`);
 
-			await bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
-			console.log(`[callback_query] View all message sent to chatId: ${chatId}`);
+			await bot.editMessageText(msg, {
+				chat_id: chatId,
+				message_id: messageId,
+				parse_mode: 'Markdown'
+			});
+			console.log(`[callback_query] View all message edited for chatId: ${chatId}`);
 		}
 
 		if (data === 'close_summary') {
