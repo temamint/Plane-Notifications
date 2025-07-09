@@ -28,8 +28,11 @@ bot.on('callback_query', async (query) => {
 
 	try {
 		if (data.startsWith('detail_')) {
-			const issueId = data.split('_')[1];
-			console.log(`[callback_query] Processing detail_ for issueId: ${issueId}`);
+			// detail_{issueId}_{issueKey}
+			const detailParts = data.split('_');
+			const issueId = detailParts[1];
+			const issueKey = detailParts.slice(2).join('_') || 'unknown';
+			console.log(`[callback_query] Processing detail_ for issueId: ${issueId}, issueKey: ${issueKey}`);
 			const notif = await getNotificationByIssueId(issueId);
 			if (!notif || !notif.project_id) {
 				await bot.editMessageText('❌ Не удалось найти задачу в базе уведомлений', {
@@ -43,7 +46,7 @@ bot.on('callback_query', async (query) => {
 			console.log(`[callback_query] getIssueDetailsMessage result: ${msg.substring(0, 100)}...`);
 
 			// Формируем inline-кнопки
-			const issueUrl = `https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${notif.issueKey}/`;
+			const issueUrl = `https://app.plane.so/${process.env.PLANE_WORKSPACE_SLUG}/browse/${issueKey}/`;
 			const replyMarkup = {
 				inline_keyboard: [
 					[
@@ -54,7 +57,7 @@ bot.on('callback_query', async (query) => {
 			};
 
 			await bot.editMessageText(
-				`Детальное описание изменений задачи [${notif.issueKey}]:\n\n${msg}`,
+				`Детальное описание изменений задачи [${issueKey}]:\n\n${msg}`,
 				{
 					chat_id: chatId,
 					message_id: messageId,

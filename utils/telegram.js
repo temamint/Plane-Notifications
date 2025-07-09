@@ -67,7 +67,7 @@ async function sendSummaryNotification(chatId) {
 	}
 
 	const buttons = [
-		...notifs.map(n => [{ text: `📄 ${n.issue_key}`, callback_data: `detail_${n.issue_id}` }]),
+		...notifs.map(n => [{ text: `📄 ${n.issue_key}`, callback_data: `detail_${n.issue_id}_${n.issue_key}` }]),
 		[{ text: '👀 Посмотреть всё', callback_data: `view_all` }],
 		[{ text: '❌ Закрыть', callback_data: 'close_summary' }]
 	];
