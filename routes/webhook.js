@@ -72,26 +72,12 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 							emoji: action === 'created' ? '🆕' : '✏️'
 						});
 						console.log(`[webhook] Notification added for chatId: ${tgId}, issueId: ${data.id}, projectId: ${data.project}, issueKey: ${issueKey}`);
+						await sendSummaryNotification(tgId);
+						console.log(`[webhook] Summary notification sent for chatId: ${tgId}`);
 					} catch (err) {
-						console.error(`[webhook] ❌ Supabase error adding notification for chatId: ${tgId}:`, err.message);
+						console.error(`[webhook] ❌ Error for chatId: ${tgId}:`, err.message);
 						continue;
 					}
-
-					if (!getTimer(tgId)) {
-						const timeoutId = setTimeout(async () => {
-							console.log(`[webhook] setTimeout fired for chatId: ${tgId}`);
-							try {
-								console.log(`[webhook] Timer triggered for chatId: ${tgId}, calling sendSummaryNotification`);
-								await sendSummaryNotification(tgId);
-							} catch (e) {
-								console.error('[webhook] ❌ Error in sendSummaryNotification:', e);
-							}
-							clearTimer(tgId);
-						}, 5000);
-						setTimer(tgId, timeoutId);
-						console.log(`[webhook] Timer set for chatId: ${tgId}`);
-					}
-
 					sentCount++;
 				}
 			}

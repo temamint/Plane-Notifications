@@ -2,6 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 const { saveTelegramUserInfo } = require('./utils/userService');
 const { getIssueDetailsMessage, getAllDetailsMessage } = require('./utils/botNotificationFormatter');
+const { getNotificationByIssueId } = require('./utils/notificationBuffer');
 const { sendTelegramMessage } = require('./utils/telegram');
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
@@ -27,9 +28,14 @@ bot.on('callback_query', async (query) => {
 
 	try {
 		if (data.startsWith('detail_')) {
-			const [, projectId, issueId] = data.split('_');
-			console.log(`[callback_query] Processing detail_ for projectId: ${projectId}, issueId: ${issueId}`);
-			const msg = await getIssueDetailsMessage(projectId, issueId);
+			const issueId = data.split('_')[1];
+			console.log(`[callback_query] Processing detail_ for issueId: ${issueId}`);
+			const notif = await getNotificationByIssueId(issueId);
+			if (!notif || !notif.project_id) {
+				await bot.sendMessage(chatId, '❌ Не удалось найти задачу в базе уведомлений');
+				return;
+			}
+			const msg = await getIssueDetailsMessage(notif.project_id, issueId);
 			console.log(`[callback_query] getIssueDetailsMessage result: ${msg.substring(0, 100)}...`);
 			await bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
 			console.log(`[callback_query] Detail message sent to chatId: ${chatId}`);

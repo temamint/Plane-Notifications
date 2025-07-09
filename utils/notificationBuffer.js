@@ -67,6 +67,17 @@ async function clearNotifications(chatId) {
 	if (error) throw error;
 }
 
+async function getNotificationByIssueId(issueId) {
+	const { data, error } = await supabase
+		.from('notifications')
+		.select('project_id')
+		.eq('issue_id', issueId)
+		.limit(1)
+		.single();
+	if (error) return null;
+	return data;
+}
+
 function setLastMessage(chatId, messageId) {
 	lastMessageMap.set(chatId, messageId);
 }
@@ -121,4 +132,5 @@ module.exports = {
 	getTimer,
 	clearTimer,
 	periodicCleanup,
+	getNotificationByIssueId,
 };
