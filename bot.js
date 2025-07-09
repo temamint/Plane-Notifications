@@ -77,9 +77,13 @@ bot.on('callback_query', async (query) => {
 			// Здесь должна быть функция, которая обновляет статус уведомления на 'readed'
 			const { markNotificationAsReaded } = require('./utils/notificationBuffer');
 			await markNotificationAsReaded(chatId, issueId);
-			await bot.editMessageText('✅ Уведомление отмечено как прочитанное.', {
+			const { buildSummaryNotification } = require('./utils/telegram');
+			const { text, buttons } = await buildSummaryNotification(chatId);
+			await bot.editMessageText(text, {
 				chat_id: chatId,
-				message_id: messageId
+				message_id: messageId,
+				parse_mode: 'Markdown',
+				reply_markup: { inline_keyboard: buttons }
 			});
 			return;
 		}
@@ -106,9 +110,13 @@ bot.on('callback_query', async (query) => {
 			// Здесь должна быть функция, которая обновляет все уведомления на 'readed'
 			const { markAllNotificationsAsReaded } = require('./utils/notificationBuffer');
 			await markAllNotificationsAsReaded(chatId);
-			await bot.editMessageText('✅ Все уведомления отмечены как прочитанные.', {
+			const { buildSummaryNotification } = require('./utils/telegram');
+			const { text, buttons } = await buildSummaryNotification(chatId);
+			await bot.editMessageText(text, {
 				chat_id: chatId,
-				message_id: messageId
+				message_id: messageId,
+				parse_mode: 'Markdown',
+				reply_markup: { inline_keyboard: buttons }
 			});
 			return;
 		}
