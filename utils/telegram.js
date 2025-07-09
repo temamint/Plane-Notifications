@@ -72,6 +72,8 @@ async function sendSummaryNotification(chatId) {
 		[{ text: '❌ Закрыть', callback_data: 'close_summary' }]
 	];
 
+	console.log(`[sendSummaryNotification] Buttons for chatId: ${chatId}:`, notifs.map(n => ({ issueKey: n.issue_key, issueId: n.issue_id })));
+
 	let messageId = null;
 	try {
 		for (let i = 0; i < textBlocks.length; i++) {

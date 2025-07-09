@@ -55,11 +55,25 @@ bot.on('callback_query', async (query) => {
 		}
 
 		// Удаляем уведомление о нажатии кнопки (опционально)
-		await bot.answerCallbackQuery(query.id);
-		console.log(`[callback_query] Callback query answered for chatId: ${chatId}`);
+		try {
+			await bot.answerCallbackQuery(query.id);
+			console.log(`[callback_query] Callback query answered for chatId: ${chatId}`);
+		} catch (err) {
+			if (err.message.includes('query is too old') || err.message.includes('query ID is invalid')) {
+				console.warn(`[callback_query] ⚠️ Callback query expired for chatId: ${chatId}, data: "${data}"`);
+			} else {
+				console.error(`[callback_query] ❌ Error answering callback query for chatId: ${chatId}:`, err.message);
+			}
+		}
 	} catch (err) {
 		console.error(`[callback_query] ❌ Error processing callback for chatId: ${chatId}, data: "${data}":`, err.message);
-		await bot.answerCallbackQuery(query.id, { text: 'Ошибка 😢' });
+		try {
+			await bot.answerCallbackQuery(query.id, { text: 'Ошибка 😢' });
+		} catch (answerErr) {
+			if (!answerErr.message.includes('query is too old') && !answerErr.message.includes('query ID is invalid')) {
+				console.error(`[callback_query] ❌ Error answering callback query on error for chatId: ${chatId}:`, answerErr.message);
+			}
+		}
 	}
 });
 
