@@ -28,7 +28,6 @@ async function sendSummaryNotification(chatId) {
 		return;
 	}
 
-	// Дедупликация по issueId (оставляем самое свежее)
 	const unique = {};
 	notifs.forEach(n => {
 		unique[n.issue_id] = n;
@@ -36,7 +35,6 @@ async function sendSummaryNotification(chatId) {
 	notifs = Object.values(unique);
 	console.log(`[sendSummaryNotification] After deduplication: ${notifs.length} notifications for chatId: ${chatId}`);
 
-	// Удаляем предыдущее сообщение, если есть
 	const lastMessageId = getLastMessage(chatId);
 	if (lastMessageId) {
 		try {

@@ -69,32 +69,42 @@ async function formatCommentMessage(action, data) {
 }
 
 async function getIssueDetailsMessage(issueId) {
+	console.log(`[getIssueDetailsMessage] Getting details for issueId: ${issueId}`);
 	try {
 		const res = await planeApi.get(`/issues/${issueId}/`);
+		console.log(`[getIssueDetailsMessage] Plane API response received for issueId: ${issueId}`);
 		const issue = res.data;
-		return await formatIssueMessage('updated', issue);
+		const result = await formatIssueMessage('updated', issue);
+		console.log(`[getIssueDetailsMessage] Formatted message for issueId: ${issueId}, length: ${result.length}`);
+		return result;
 	} catch (err) {
-		console.error('❌ Не удалось получить задачу:', err.message);
+		console.error(`[getIssueDetailsMessage] ❌ Failed to get issue ${issueId}:`, err.message);
 		return '❌ Не удалось загрузить задачу';
 	}
 }
 
 async function getAllDetailsMessage(chatId) {
+	console.log(`[getAllDetailsMessage] Getting all details for chatId: ${chatId}`);
 	const notifications = getNotifications(chatId);
+	console.log(`[getAllDetailsMessage] Found ${notifications?.length || 0} notifications for chatId: ${chatId}`);
 	if (!notifications?.length) return 'Нет новых уведомлений.';
 
 	let fullText = `🔔 Детали по ${notifications.length} задачам:\n\n`;
 
 	for (const notif of notifications) {
 		try {
+			console.log(`[getAllDetailsMessage] Processing notification: ${notif.issueKey} (${notif.issueId})`);
 			const res = await planeApi.get(`/issues/${notif.issueId}/`);
 			const msg = await formatIssueMessage('updated', res.data);
 			fullText += msg + '\n\n';
+			console.log(`[getAllDetailsMessage] Added details for ${notif.issueKey}`);
 		} catch (err) {
+			console.error(`[getAllDetailsMessage] ❌ Failed to load ${notif.issueKey}:`, err.message);
 			fullText += `⚠️ Не удалось загрузить ${notif.issueKey}\n\n`;
 		}
 	}
 
+	console.log(`[getAllDetailsMessage] Final message length: ${fullText.length}`);
 	return fullText;
 }
 
