@@ -105,7 +105,7 @@ async function getIssueDetailsMessage(projectId, issueId) {
 		console.log(`[getIssueDetailsMessage] Plane API URL: ${url}`);
 		const res = await planeApi.get(url);
 		console.log(`[getIssueDetailsMessage] Plane API response received for projectId: ${projectId}, issueId: ${issueId}`);
-		const issue = res.data.results;
+		const issue = res.data;
 		console.debug(`[getIssueDetailsMessage] Issue data:`, issue);
 		const result = await formatIssueMessage('updated', issue);
 		console.log(`[getIssueDetailsMessage] Formatted message for projectId: ${projectId}, issueId: ${issueId}, length: ${result.length}`);
