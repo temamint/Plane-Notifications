@@ -141,15 +141,15 @@ async function getAllDetailsMessage(chatId) {
 
 	for (const notif of notifications) {
 		try {
-			console.log(`[getAllDetailsMessage] Processing notification: ${notif.issueKey} (${notif.issueId})`);
-			const res = await planeApi.get(`/issues/${notif.issueId}/`);
+			console.log(`[getAllDetailsMessage] Processing notification: ${notif.issue_key} (${notif.issue_id})`);
+			const res = await planeApi.get(`/issues/${notif.issue_id}/`);
 			console.debug(`[getAllDetailsMessage] Issue data:`, res.data);
 			const msg = await formatIssueMessage('updated', res.data);
 			fullText += msg + '\n\n';
-			console.log(`[getAllDetailsMessage] Added details for ${notif.issueKey}`);
+			console.log(`[getAllDetailsMessage] Added details for ${notif.issue_key}`);
 		} catch (err) {
-			console.error(`[getAllDetailsMessage] ❌ Failed to load ${notif.issueKey}:`, err.message);
-			fullText += `⚠️ Не удалось загрузить ${notif.issueKey}\n\n`;
+			console.error(`[getAllDetailsMessage] ❌ Failed to load ${notif.issue_key}:`, err.message);
+			fullText += `⚠️ Не удалось загрузить ${notif.issue_key}\n\n`;
 		}
 	}
 
