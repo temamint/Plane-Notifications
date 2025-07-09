@@ -116,15 +116,15 @@ bot.on('callback_query', async (query) => {
 		if (data === 'back_to_notifications' || data === 'view_all') {
 			console.log(`[callback_query] Processing view_all/back_to_notifications for chatId: ${chatId}`);
 
-			const msg = await getAllDetailsMessage(chatId);
-			console.log(`[callback_query] getAllDetailsMessage result: ${msg.substring(0, 100)}...`);
-
-			await bot.editMessageText(msg, {
+			const { buildSummaryNotification } = require('./utils/telegram');
+			const { text, buttons } = await buildSummaryNotification(chatId);
+			await bot.editMessageText(text, {
 				chat_id: chatId,
 				message_id: messageId,
-				parse_mode: 'Markdown'
+				parse_mode: 'Markdown',
+				reply_markup: { inline_keyboard: buttons }
 			});
-			console.log(`[callback_query] View all message edited for chatId: ${chatId}`);
+			console.log(`[callback_query] View all/Back to notifications message edited for chatId: ${chatId}`);
 		}
 
 		if (data === 'close_summary') {
