@@ -13,18 +13,19 @@ async function addNotification(chatId, notif) {
 		.eq('issue_id', notif.issueId)
 		.in('status', ['unread', 'sent']);
 	if (err1) throw err1;
-	if (existing && existing.length > 0) return;
+	if (existing && existing.length > 0) return false; // Уже есть
 
 	const { error } = await supabase.from('notifications').insert({
 		chat_id: chatId,
 		issue_id: notif.issueId,
-		project_id: notif.projectId, // сохраняем projectId
+		project_id: notif.projectId,
 		issue_key: notif.issueKey,
 		title: notif.title,
 		emoji: notif.emoji || null,
 		status: 'unread',
 	});
 	if (error) throw error;
+	return true; // Новое уведомление добавлено
 }
 
 async function getNotifications(chatId, statuses = ['unread', 'sent']) {
