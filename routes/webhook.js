@@ -66,11 +66,12 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 					try {
 						await addNotification(tgId, {
 							issueId: data.id,
+							projectId: data.project, // сохраняем projectId
 							issueKey,
 							title: data.name,
 							emoji: action === 'created' ? '🆕' : '✏️'
 						});
-						console.log(`[webhook] Notification added for chatId: ${tgId}, issueId: ${data.id}, issueKey: ${issueKey}`);
+						console.log(`[webhook] Notification added for chatId: ${tgId}, issueId: ${data.id}, projectId: ${data.project}, issueKey: ${issueKey}`);
 					} catch (err) {
 						console.error(`[webhook] ❌ Supabase error adding notification for chatId: ${tgId}:`, err.message);
 						continue;

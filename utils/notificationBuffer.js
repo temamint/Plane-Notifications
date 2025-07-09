@@ -18,6 +18,7 @@ async function addNotification(chatId, notif) {
 	const { error } = await supabase.from('notifications').insert({
 		chat_id: chatId,
 		issue_id: notif.issueId,
+		project_id: notif.projectId, // сохраняем projectId
 		issue_key: notif.issueKey,
 		title: notif.title,
 		emoji: notif.emoji || null,

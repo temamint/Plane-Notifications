@@ -27,12 +27,10 @@ bot.on('callback_query', async (query) => {
 
 	try {
 		if (data.startsWith('detail_')) {
-			const issueId = data.split('_')[1];
-			console.log(`[callback_query] Processing detail_ for issueId: ${issueId}`);
-
-			const msg = await getIssueDetailsMessage(issueId);
+			const [, projectId, issueId] = data.split('_');
+			console.log(`[callback_query] Processing detail_ for projectId: ${projectId}, issueId: ${issueId}`);
+			const msg = await getIssueDetailsMessage(projectId, issueId);
 			console.log(`[callback_query] getIssueDetailsMessage result: ${msg.substring(0, 100)}...`);
-
 			await bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' });
 			console.log(`[callback_query] Detail message sent to chatId: ${chatId}`);
 		}

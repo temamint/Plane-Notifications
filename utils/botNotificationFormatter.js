@@ -68,17 +68,20 @@ async function formatCommentMessage(action, data) {
 *Содержание:* ${content}`;
 }
 
-async function getIssueDetailsMessage(issueId) {
-	console.log(`[getIssueDetailsMessage] Getting details for issueId: ${issueId}`);
+async function getIssueDetailsMessage(projectId, issueId) {
+	console.log(`[getIssueDetailsMessage] Getting details for projectId: ${projectId}, issueId: ${issueId}`);
 	try {
-		const res = await planeApi.get(`/issues/${issueId}/`);
-		console.log(`[getIssueDetailsMessage] Plane API response received for issueId: ${issueId}`);
+		const workspaceSlug = process.env.PLANE_WORKSPACE_SLUG;
+		const url = `/api/v1/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/`;
+		console.log(`[getIssueDetailsMessage] Plane API URL: ${url}`);
+		const res = await planeApi.get(url);
+		console.log(`[getIssueDetailsMessage] Plane API response received for projectId: ${projectId}, issueId: ${issueId}`);
 		const issue = res.data;
 		const result = await formatIssueMessage('updated', issue);
-		console.log(`[getIssueDetailsMessage] Formatted message for issueId: ${issueId}, length: ${result.length}`);
+		console.log(`[getIssueDetailsMessage] Formatted message for projectId: ${projectId}, issueId: ${issueId}, length: ${result.length}`);
 		return result;
 	} catch (err) {
-		console.error(`[getIssueDetailsMessage] ❌ Failed to get issue ${issueId}:`, err.message);
+		console.error(`[getIssueDetailsMessage] ❌ Failed to get issue ${issueId} in project ${projectId}:`, err.message);
 		return '❌ Не удалось загрузить задачу';
 	}
 }

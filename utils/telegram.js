@@ -67,12 +67,12 @@ async function sendSummaryNotification(chatId) {
 	}
 
 	const buttons = [
-		...notifs.map(n => [{ text: `📄 ${n.issue_key}`, callback_data: `detail_${n.issue_id}` }]),
+		...notifs.map(n => [{ text: `📄 ${n.issue_key}`, callback_data: `detail_${n.project_id}_${n.issue_id}` }]),
 		[{ text: '👀 Посмотреть всё', callback_data: `view_all` }],
 		[{ text: '❌ Закрыть', callback_data: 'close_summary' }]
 	];
 
-	console.log(`[sendSummaryNotification] Buttons for chatId: ${chatId}:`, notifs.map(n => ({ issueKey: n.issue_key, issueId: n.issue_id })));
+	console.log(`[sendSummaryNotification] Buttons for chatId: ${chatId}:`, notifs.map(n => ({ issueKey: n.issue_key, projectId: n.project_id, issueId: n.issue_id })));
 
 	let messageId = null;
 	try {
