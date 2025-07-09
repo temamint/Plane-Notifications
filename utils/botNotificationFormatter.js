@@ -27,8 +27,8 @@ function getCommentTitle(action) {
 }
 
 function escapeMarkdown(text) {
-	if (!text) return '';
-	return text.replace(/([_\*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
+	if (text === undefined || text === null) return '';
+	return String(text).replace(/([_\*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
 }
 
 async function formatIssueMessage(action, data) {
