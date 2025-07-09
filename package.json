@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node bot.js"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.10",
     "axios": "^1.9.0",
