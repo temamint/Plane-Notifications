@@ -142,7 +142,8 @@ async function getAllDetailsMessage(chatId) {
 	for (const notif of notifications) {
 		try {
 			console.log(`[getAllDetailsMessage] Processing notification: ${notif.issue_key} (${notif.issue_id})`);
-			const res = await planeApi.get(`/issues/${notif.issue_id}/`);
+			const workspaceSlug = process.env.PLANE_WORKSPACE_SLUG;
+			const res = await planeApi.get(`/workspaces/${workspaceSlug}/projects/${notif.project_id}/issues/${notif.issue_id}/`);
 			console.debug(`[getAllDetailsMessage] Issue data:`, res.data);
 			const msg = await formatIssueMessage('updated', res.data);
 			fullText += msg + '\n\n';

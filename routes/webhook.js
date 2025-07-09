@@ -64,7 +64,7 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 				console.log(`[webhook] Plane userId: ${planeUserId}, Telegram chatId: ${tgId}`);
 				if (tgId) {
 					try {
-						await addNotification(tgId, {
+						const added = await addNotification(tgId, {
 							issueId: data.id,
 							projectId: data.project, // сохраняем projectId
 							issueKey,
@@ -72,8 +72,10 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 							emoji: action === 'created' ? '🆕' : '✏️'
 						});
 						console.log(`[webhook] Notification added for chatId: ${tgId}, issueId: ${data.id}, projectId: ${data.project}, issueKey: ${issueKey}`);
-						await sendSummaryNotification(tgId);
-						console.log(`[webhook] Summary notification sent for chatId: ${tgId}`);
+						if (added) {
+							await sendSummaryNotification(tgId);
+							console.log(`[webhook] Summary notification sent for chatId: ${tgId}`);
+						}
 					} catch (err) {
 						console.error(`[webhook] ❌ Error for chatId: ${tgId}:`, err.message);
 						continue;

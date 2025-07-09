@@ -66,8 +66,22 @@ async function sendSummaryNotification(chatId) {
 		console.log(`[sendSummaryNotification] Message text:\n${textBlocks[0]}`);
 	}
 
+	// Формируем кнопки задач по 3 в ряд
+	function chunkArray(arr, size) {
+		const res = [];
+		for (let i = 0; i < arr.length; i += size) {
+			res.push(arr.slice(i, i + size));
+		}
+		return res;
+	}
+
+	const taskButtons = chunkArray(
+		notifs.map(n => ({ text: `📄 ${n.issue_key}`, callback_data: `detail_${n.issue_id}_${n.issue_key}` })),
+		3
+	).map(row => row);
+
 	const buttons = [
-		...notifs.map(n => [{ text: `📄 ${n.issue_key}`, callback_data: `detail_${n.issue_id}_${n.issue_key}` }]),
+		...taskButtons,
 		[{ text: '👀 Посмотреть всё', callback_data: `view_all` }],
 		[{ text: '✅ Отметить прочитанным всё', callback_data: 'mark_all_read_confirm' }],
 		[{ text: '❌ Закрыть', callback_data: 'close_summary' }]

@@ -50,15 +50,17 @@ bot.on('callback_query', async (query) => {
 			const replyMarkup = {
 				inline_keyboard: [
 					[
-						{ text: 'Открыть в Plane', url: issueUrl },
-						{ text: 'Назад', callback_data: 'back_to_notifications' },
 						{ text: '✅ Отметить прочитанным', callback_data: `mark_read_${issueId}` }
+					],
+					[
+						{ text: 'Открыть', url: issueUrl },
+						{ text: 'Назад', callback_data: 'back_to_notifications' }
 					]
 				]
 			};
 
 			await bot.editMessageText(
-				`Детальное описание изменений задачи [${issueKey}]:\n\n${msg}`,
+				`📄 __**Детальное описание изменений задачи ${issueKey}:**__\n\n${msg}`,
 				{
 					chat_id: chatId,
 					message_id: messageId,
